@@ -1,0 +1,35 @@
+﻿@model App.Admin.Models.ViewModels.Category.EditCategoryViewModel
+
+<h2>Edit Category</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success col-12 text-center">
+        @TempData["SuccessMessage"]
+    </div>
+}
+<form asp-controller="Category" asp-action="Edit" asp-route-categoryId="@Model.Id" method="post">
+    <input type="hidden" asp-for="Id" value="@Model.Id"/>
+    <div class="form-group">
+        <label asp-for="Name">Kategori Adı</label>
+        <input class="form-control" asp-for="Name" required />
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Color">Kategori Rengi</label>
+        <input class="form-control" asp-for="Color" required />
+        <span class="text-danger" asp-validation-for="Color"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IconCssClass">Kategori Icon Css Class</label>
+        <input class="form-control" asp-for="IconCssClass" required />
+        <span class="text-danger" asp-validation-for="IconCssClass"></span>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

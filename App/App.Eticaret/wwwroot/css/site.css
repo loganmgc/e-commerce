@@ -1,0 +1,46 @@
+﻿/*
+    Uygulamaya ekleyeceğiniz css kural ve tanımlarını bu dosyaya ekleyebilirsiniz.
+*/
+
+.review-form {
+    background: #f5f5f5;
+    padding: 30px;
+    border-radius: 5px;
+}
+
+    .review-form h4, .reviews-list h4 {
+        margin-bottom: 20px;
+        color: #1c1c1c;
+    }
+
+.review-item {
+    margin-bottom: 20px;
+}
+
+.review-info h6 {
+    color: #1c1c1c;
+    font-weight: 600;
+}
+
+.review-rating {
+    color: #ffd119;
+}
+
+.review-text {
+    color: #6f6f6f;
+    line-height: 1.8;
+}
+
+.site-btn {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 13px 30px 12px;
+    background: #7fad39;
+    border: none;
+}
+
+    .site-btn:hover {
+        background: #688e31;
+    }

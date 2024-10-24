@@ -1,0 +1,17 @@
+﻿<div class="container-fluid">
+    <div class="row">
+        <h2 class="col-12 text-center">Delete Product</h2>
+        @if (ViewBag.Success is not null)
+        {
+            <div class="alert alert-success col-12 text-center">
+                @ViewBag.Success
+            </div>
+        }
+        @if (ViewBag.Error is not null)
+        {
+            <div class="alert alert-danger col-12 text-center">
+                @ViewBag.Error
+            </div>
+        }
+    </div>
+</div>
