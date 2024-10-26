@@ -10,8 +10,8 @@ namespace App.Data.Data.Entities
         public byte Quantity { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public UserEntity User { get; set; }
-        public ProductEntity Product { get; set; }
+        public UserEntity User { get; set; } = null!;
+        public ProductEntity Product { get; set; } = null!;
     }
 
 }

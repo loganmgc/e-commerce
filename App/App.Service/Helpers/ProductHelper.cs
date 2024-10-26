@@ -14,7 +14,6 @@ namespace App.Service.Helpers
             return products.Select(p => new GetProductDto
             {
                 ProductId = p.ProductId,
-                SellerId = p.SellerId,
                 SellerName = $"{p.Seller.FirstName} {p.Seller.LastName}",
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category.Name,
@@ -22,7 +21,6 @@ namespace App.Service.Helpers
                 Price = p.Price,
                 Details = p.Details,
                 StockAmount = p.StockAmount,
-                CreatedAt = p.CreatedAt,
             }).ToList();
         }
 

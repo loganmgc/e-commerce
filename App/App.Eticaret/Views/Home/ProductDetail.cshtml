@@ -1,9 +1,8 @@
-﻿@{
+﻿@model AddProductCommentViewModel
+@{
     ViewData["Title"] = "Product Detail";
     var product = ViewBag.Product;
-    var comments = ViewBag.Comments;
 }
-@model App.Eticaret.Models.ViewModels.Product.AddProductCommentViewModel
 
 
 <!-- Breadcrumb Section Begin -->
@@ -12,11 +11,11 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>@product.ProductName</h2>
+                    <h2>@(product.Name)</h2>
                     <div class="breadcrumb__option">
                         <a href="./index.html">Home</a>
                         <a href="./index.html">Vegetables</a>
-                        <span>@product.ProductName</span>
+                        <span>@(product.Name)</span>
                     </div>
                 </div>
             </div>
@@ -30,41 +29,37 @@
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__pic">
-                    <div class="product__details__pic__item">
-                        <img class="product__details__pic__item--large"
-                             src="~/theme/img/product/details/product-details-1.jpg" alt="">
-                    </div>
+                    @if(product.ImageUrls.Length > 0)
+                    {
+                        <div class="product__details__pic__item">
+                            <img class="product__details__pic__item--large"
+                                 src="@(product.ImageUrls[0])" alt="">
+                        </div>
+                    }
                     <div class="product__details__pic__slider owl-carousel">
-                        <img data-imgbigurl="~/theme/img/product/details/product-details-2.jpg"
-                             src="~/theme/img/product/details/thumb-1.jpg" alt="">
-                        <img data-imgbigurl="~/theme/img/product/details/product-details-3.jpg"
-                             src="~/theme/img/product/details/thumb-2.jpg" alt="">
-                        <img data-imgbigurl="~/theme/img/product/details/product-details-5.jpg"
-                             src="~/theme/img/product/details/thumb-3.jpg" alt="">
-                        <img data-imgbigurl="~/theme/img/product/details/product-details-4.jpg"
-                             src="~/theme/img/product/details/thumb-4.jpg" alt="">
+                        @foreach (var imageUrl in product.ImageUrls)
+                        {
+                            <img data-imgbigurl="@imageUrl"
+                                 src="@imageUrl" alt="">
+                        }
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__text">
-                    <h3>@product.ProductName</h3>
+                    <h3>@(product.Name)</h3>
                     <div class="product__details__rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star-half-o"></i>
-                        <span>(18 reviews)</span>
+                        <partial name="Partials/ReviewStars" product=@(product.AverageStarCount) />
+                        <span>(@(product.Reviews.Length))</span>
                     </div>
-                    <div class="product__details__price">$@product.Price</div>
+                    <div class="product__details__price">@((product.DiscountedPrice ?? product.Price).ToString("C"))</div>
                     <p>
-                        @product.Details
+                        @(product.Details?.Substring(0, Math.Min(200, product.Details.Length)))
                     </p>
                     <div class="product__details__quantity">
                         <div class="quantity">
                             <div class="pro-qty">
-                                <input type="number" value="1" max="@product.StockAmount">
+                                <input type="number" value="1" min="0">
                             </div>
                         </div>
                     </div>
@@ -99,7 +94,7 @@
                         </li> *@
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab"
-                               aria-selected="false">Reviews <span>(@comments.Count)</span></a>
+                               aria-selected="false">Reviews <span>(@product.Reviews.Length)</span></a>
                         </li>
                     </ul>
                     <div class="tab-content">
@@ -145,21 +140,18 @@
                                 </div>
 
                                 <div class="reviews-list">
-                                    <h4>Product Reviews (@comments.Count)</h4>
+                                    <h4>Product Reviews (@product.Reviews.Length)</h4>
 
-                                    @foreach (var comment in comments)
+                                    @foreach (var comment in product.Reviews)
                                     {
                                         <div class="review-item border-bottom pb-4 mt-4">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <div class="review-info">
-                                                    <h6 class="mb-0">@comment.UserName</h6>
+                                                    <h6 class="mb-0">@comment.Username</h6>
                                                     <small class="text-muted">@comment.CreatedAt</small>
                                                 </div>
                                                 <div class="review-rating">
-                                                    @for (int i = 1; i <= 5; i++)
-                                                    {
-                                                        <i class="fa @((i <= comment.StarCount) ? "fa-star text-warning" : "fa-star-o")"></i>
-                                                    }
+                                                    <partial name="Partials/ReviewStars" product=@((double)comment.StarCount)/>
                                                     <span class="ml-2">(@comment.StarCount)</span>
                                                 </div>
                                             </div>

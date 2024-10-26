@@ -13,10 +13,11 @@ namespace App.Data.Data.Entities
         public bool Enabled { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public RoleEntity Role { get; set; }
+        public RoleEntity Role { get; set; } = null!;
         public ICollection<ProductEntity>? Products { get; set; }
         public ICollection<ProductCommentEntity>? ProductComments { get; set; }
-        public ICollection<CartItemEntity> CartItems { get; set; }
-        public ICollection<OrderEntity> Orders { get; set; }
+        public ICollection<CartItemEntity>? CartItems { get; set; }
+        public ICollection<OrderEntity>? Orders { get; set; }
+        public ICollection<BlogEntity>? Blogs { get; set; }
     }
 }

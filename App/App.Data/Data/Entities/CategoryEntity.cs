@@ -10,6 +10,6 @@ namespace App.Data.Data.Entities
         public string IconCssClass { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
 
-        public ICollection<ProductEntity> Products { get; set; }
+        public ICollection<ProductEntity>? Products { get; set; }
     }
 }

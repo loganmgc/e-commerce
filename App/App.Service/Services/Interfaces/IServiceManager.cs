@@ -5,5 +5,8 @@
         IProductService ProductService { get; }
         ICategoryService CategoryService { get; }
         IProductCommentService ProductCommentService { get; }
+        IBlogService BlogService { get; }
+        IContactFormService ContactFormService { get; }
+        IDiscountService DiscountService { get; }
     }
 }

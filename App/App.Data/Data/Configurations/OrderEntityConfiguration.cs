@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Data.Data.Configurations
 {
-    public class OrderEntityConfiguration : IEntityTypeConfiguration<OrderEntity>
+    internal class OrderEntityConfiguration : IEntityTypeConfiguration<OrderEntity>
     {
         public void Configure(EntityTypeBuilder<OrderEntity> builder)
         {
@@ -19,7 +19,8 @@ namespace App.Data.Data.Configurations
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
             builder.Property(o => o.OrderCode)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(250);
             builder.Property(o => o.Address)
                 .IsRequired()
                 .HasMaxLength(250);

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Data.Data.Configurations
 {
-    public class ProductCommentEntityConfiguration : IEntityTypeConfiguration<ProductCommentEntity>
+    internal class ProductCommentEntityConfiguration : IEntityTypeConfiguration<ProductCommentEntity>
     {
         public void Configure(EntityTypeBuilder<ProductCommentEntity> builder)
         {

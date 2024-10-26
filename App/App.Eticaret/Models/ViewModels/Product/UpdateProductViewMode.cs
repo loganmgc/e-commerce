@@ -7,10 +7,11 @@ namespace App.Eticaret.Models.ViewModels.Product
         [Required]
         public int ProductId { get; set; }
         [Required(ErrorMessage = "Name is required"),
-            StringLength(100, MinimumLength =2, ErrorMessage = "Minimum 2 maximum 100 characters")]
+            MinLength(2, ErrorMessage = "Minimum 2 characters"),
+            MaxLength(100, ErrorMessage = "Maximum 100 characters")]
         public string Name { get; set; } = null!;
 
-        [MaxLength(1000, ErrorMessage ="Maximum 1000 characters")]
+        [MaxLength(1000, ErrorMessage = "Maximum 1000 characters")]
         public string? Details { get; set; }
 
         [Required(ErrorMessage = "Price is required")]
@@ -23,7 +24,6 @@ namespace App.Eticaret.Models.ViewModels.Product
 
         [Required(ErrorMessage = "Please select a category")]
         public int CategoryId { get; set; }
-        [Required]
-        public int SellerId { get; set; }
+        public int? DiscountId { get; set; }
     }
 }

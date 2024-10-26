@@ -1,6 +1,7 @@
 ﻿using App.Data.Data.Entities;
 using App.Data.Repositories.Interfaces;
 using App.Service.Models.CategoryDtos;
+using App.Service.Models.CategoryDTOs;
 using App.Service.Services.Interfaces;
 
 namespace App.Service.Services.Implementations
@@ -48,6 +49,22 @@ namespace App.Service.Services.Implementations
                 IconCssClass = c.IconCssClass
             }).ToList();
             return result;
+        }
+
+        public async Task<IEnumerable<CategoryDto>> GetCategoriesForSliderAsync()
+        {
+            var products = await _repositoryManager.ProductRepository.GetProductsWithCategoriesAsync();
+            var categories = products
+                .GroupBy(p => p.CategoryId)
+                .Select(g => new CategoryDto
+                {
+                    Id = g.First().Category.CategoryId,
+                    Name = g.First().Category.Name,
+                    Color = g.First().Category.Color,
+                    IconCssClass = g.First().Category.IconCssClass,
+                    ImageUrl = g.First().ProductImages.Count != 0 ? g.First().ProductImages.First().Url : null
+                }).ToList();
+            return categories;
         }
 
         public async Task<GetCategoryDto> GetCategoryByIdAsync(int id)

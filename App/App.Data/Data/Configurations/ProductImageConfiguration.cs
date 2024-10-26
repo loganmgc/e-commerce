@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Data.Data.Configurations
 {
-    public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImageEntity>
+    internal class ProductImageConfiguration : IEntityTypeConfiguration<ProductImageEntity>
     {
         public void Configure(EntityTypeBuilder<ProductImageEntity> builder)
         {
@@ -23,7 +23,7 @@ namespace App.Data.Data.Configurations
             builder.HasOne(p => p.Product)
                 .WithMany(p => p.ProductImages)
                 .HasForeignKey(p => p.ProductId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

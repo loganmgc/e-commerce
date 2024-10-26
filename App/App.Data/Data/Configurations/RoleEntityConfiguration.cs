@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Data.Data.Configurations
 {
-    public class RoleEntityConfiguration : IEntityTypeConfiguration<RoleEntity>
+    internal class RoleEntityConfiguration : IEntityTypeConfiguration<RoleEntity>
     {
         public void Configure(EntityTypeBuilder<RoleEntity> builder)
         {
@@ -15,7 +15,7 @@ namespace App.Data.Data.Configurations
             builder.Property(r => r.Name)
                 .IsRequired()
                 .HasMaxLength(10);
-            builder.Property(r => r.CreatedDate)
+            builder.Property(r => r.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
         }

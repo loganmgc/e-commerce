@@ -17,11 +17,6 @@ namespace App.Service.Services.Implementations
             _productHelper = productHelper;
         }
 
-        public async Task<IEnumerable<GetProductDto>> GetAllEnableProductsAsync()
-        {
-            var products = await _repositoryManager.ProductRepository.GetAllEnableProductsAsync();
-            return _productHelper.ProductListing(products);
-        }
 
         public async Task<IEnumerable<GetProductDto>> GetAllNotEnableProductsAsync()
         {
@@ -32,20 +27,20 @@ namespace App.Service.Services.Implementations
         public async Task<IEnumerable<GetProductDto>> GetAllProductsAsync()
         {
             var products = await _repositoryManager.ProductRepository.GetAllProductsAsync();
+
             return _productHelper.ProductListing(products);
         }
 
-        public async Task<(GetProductDto? product, string? error)> GetProductByIdAsync(int id)
+        public async Task<GetProductDto> GetProductByIdAsync(int id)
         {
             var product = await _repositoryManager.ProductRepository.GetProductByIdAsync(id);
             if (product is null)
             {
-                return (null, "Product not found");
+                return null;
             }
             var result = new GetProductDto()
             {
                 ProductId = product.ProductId,
-                SellerId = product.SellerId,
                 SellerName = $"{product.Seller.FirstName} {product.Seller.LastName}",
                 CategoryId = product.CategoryId,
                 CategoryName = product.Category.Name,
@@ -53,9 +48,10 @@ namespace App.Service.Services.Implementations
                 Price = product.Price,
                 Details = product.Details,
                 StockAmount = product.StockAmount,
-                CreatedAt = product.CreatedAt,
+                DiscountPercentage = product.Discount == null ? null : product.Discount.DiscountRate,
+                ImageUrls = product.ProductImages.Select(i => i.Url).ToArray()
             };
-            return (result, null);
+            return (result);
         }
 
         public async Task<IEnumerable<GetProductDto>> GetProductsByCategoryAsync(int categoryId)
@@ -80,6 +76,7 @@ namespace App.Service.Services.Implementations
                 Price = productDto.Price,
                 Details = productDto.Details,
                 StockAmount = productDto.StockAmount,
+                DiscountId = productDto.DiscountId,
                 Enabled = true
             };
             await _repositoryManager.ProductRepository.AddAsync(product);
@@ -93,12 +90,12 @@ namespace App.Service.Services.Implementations
             {
                 return false;
             }
-            existingProduct.SellerId = id;
             existingProduct.CategoryId = productDto.CategoryId;
             existingProduct.Name = productDto.Name;
             existingProduct.Price = productDto.Price;
             existingProduct.Details = productDto.Details;
             existingProduct.StockAmount = productDto.StockAmount;
+            existingProduct.DiscountId = productDto.DiscountId;
             _repositoryManager.ProductRepository.Update(existingProduct);
             await _repositoryManager.ProductRepository.SaveAsync();
             return true;
@@ -114,6 +111,44 @@ namespace App.Service.Services.Implementations
             _repositoryManager.ProductRepository.Delete(existingProduct);
             await _repositoryManager.ProductRepository.SaveAsync();
             return (true, "Product successfuly deleted");
+        }
+
+        public async Task<IEnumerable<ProductListingDto>> GetFeaturedProductsAsync()
+        {
+            var product = await _repositoryManager.ProductRepository.GetAllProductsAsync();
+            var featuredProducts = product.Select(p => new ProductListingDto
+            {
+                Id = p.ProductId,
+                Name = p.Name,
+                Price = p.Price,
+                CategoryName = p.Category.Name,
+                DiscountPercentage = p.Discount == null ? null : p.Discount.DiscountRate,
+                ImageUrl = p.ProductImages.Count != 0 ? p.ProductImages.First().Url : null
+            }).ToList();
+            return featuredProducts;
+        }
+
+        public async Task<IEnumerable<ProductListingDto>> GetFilteredProductsAsync(int count, string filterType)
+        {
+            var query = await _repositoryManager.ProductRepository.GetAllProductsAsync();
+            query = filterType switch
+            {
+                "TopRated" => query.OrderByDescending(p => p.ProductComments.Any() ? p.ProductComments.Average(c => c.StarCount) : 0),
+                "MostCommented" => query.OrderByDescending(p => p.ProductComments.Any() ? p.ProductComments?.Count : 0),
+                "Latest" => query.OrderByDescending(p => p.CreatedAt),
+                _ => query
+            };
+            var product = query.Take(count)
+                .Select(p => new ProductListingDto
+                {
+                    Id = p.ProductId,
+                    Name = p.Name,
+                    Price = p.Price,
+                    CategoryName = p.Category.Name,
+                    DiscountPercentage = p.Discount == null ? null : p.Discount.DiscountRate,
+                    ImageUrl = p.ProductImages.Count != 0 ? p.ProductImages.First().Url : null
+                }).ToList();
+            return product;
         }
     }
 }

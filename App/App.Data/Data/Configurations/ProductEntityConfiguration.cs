@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Data.Data.Configurations
 {
-    public class ProductEntityConfiguration : IEntityTypeConfiguration<ProductEntity>
+    internal class ProductEntityConfiguration : IEntityTypeConfiguration<ProductEntity>
     {
         public void Configure(EntityTypeBuilder<ProductEntity> builder)
         {
@@ -22,7 +22,8 @@ namespace App.Data.Data.Configurations
                 .IsRequired();
             builder.HasOne(p => p.Category)
                 .WithMany(c => c.Products)
-                .HasForeignKey(p => p.CategoryId);
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.NoAction);
             builder.Property(p => p.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -30,6 +31,7 @@ namespace App.Data.Data.Configurations
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
             builder.Property(p => p.Details)
+                .IsRequired()
                 .HasMaxLength(1000);
             builder.Property(p => p.StockAmount)
                 .IsRequired();

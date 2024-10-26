@@ -72,7 +72,7 @@ namespace App.Service.Services.Implementations
             {
                 ProductCommentId = comment.ProductCommentId,
                 UserId = comment.UserId,
-                UserName = comment.User.FirstName,
+                UserName = $"{comment.User.FirstName} {comment.User.LastName}",
                 ProductId = comment.ProductId,
                 ProductName = comment.Product.Name,
                 Text = comment.Text,

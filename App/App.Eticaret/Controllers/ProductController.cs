@@ -4,6 +4,7 @@ using App.Service.Services.Interfaces;
 using App.Eticaret.Models.ViewModels.Product;
 using App.Eticaret.Models.ViewModels.Category;
 using App.Service.Models.ProductCommentDTOs;
+using App.Eticaret.Models.ViewModels.Discount;
 
 namespace App.Eticaret.Controllers
 {
@@ -28,6 +29,12 @@ namespace App.Eticaret.Controllers
                 Color = c.Color,
                 IconCssClass = c.IconCssClass
             });
+            var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
+            ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
+            {
+                Id = d.DiscountId,
+                Rate = d.DiscountRate
+            });
             return View();
         }
 
@@ -45,6 +52,12 @@ namespace App.Eticaret.Controllers
                     Color = c.Color,
                     IconCssClass = c.IconCssClass
                 });
+                var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
+                ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
+                {
+                    Id = d.DiscountId,
+                    Rate = d.DiscountRate
+                });
                 return View(product);
             }
             var productDto = new AddProductDto
@@ -54,6 +67,7 @@ namespace App.Eticaret.Controllers
                 Price = product.Price,
                 StockAmount = product.StockAmount,
                 CategoryId = product.CategoryId,
+                DiscountId = product.DiscountId,
                 SellerId = product.SellerId,
             };
             await _serviceManager.ProductService.AddProductAsync(productDto);
@@ -65,6 +79,11 @@ namespace App.Eticaret.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit([FromRoute] int productId)
         {
+            var existingProduct = await _serviceManager.ProductService.GetProductByIdAsync(productId);
+            if (existingProduct is null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
             ViewBag.Categories = categories.Select(c => new CategoryViewModel
             {
@@ -73,12 +92,13 @@ namespace App.Eticaret.Controllers
                 Color = c.Color,
                 IconCssClass = c.IconCssClass
             });
-            var (existingProduct, error) =await _serviceManager.ProductService.GetProductByIdAsync(productId);
-            if (error is not null)
+            var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
+            ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
             {
-                ViewBag.Error = error;
-                return View();
-            }
+                Id = d.DiscountId,
+                Rate = d.DiscountRate
+            });
+
             var product = new UpdateProductViewModel()
             {
                 ProductId = existingProduct.ProductId,
@@ -87,7 +107,7 @@ namespace App.Eticaret.Controllers
                 Price = existingProduct.Price,
                 StockAmount = existingProduct.StockAmount,
                 CategoryId = existingProduct.CategoryId,
-                SellerId= existingProduct.SellerId
+                DiscountId = existingProduct.DiscountId,
             };
             return View(product);
         }
@@ -106,12 +126,17 @@ namespace App.Eticaret.Controllers
                     Color = c.Color,
                     IconCssClass = c.IconCssClass
                 });
+                var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
+                ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
+                {
+                    Id = d.DiscountId,
+                    Rate = d.DiscountRate
+                });
                 return View(product);
             }
             var productDto = new UpdateProductDto()
             {
                 Id = product.ProductId,
-                SellerId = product.SellerId,
                 Name = product.Name,
                 CategoryId = product.CategoryId,
                 Price = product.Price,

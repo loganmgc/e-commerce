@@ -8,7 +8,7 @@
         public string Address { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
 
-        public UserEntity User { get; set; }
-        public ICollection<OrderItemEntity> OrderItems { get; set; }
+        public UserEntity User { get; set; } = null!;
+        public ICollection<OrderItemEntity>? OrderItems { get; set; }
     }
 }

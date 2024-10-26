@@ -11,7 +11,7 @@ namespace App.Data.Data.Entities
         public decimal UnitPrice { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public OrderEntity Order { get; set; }
-        public ProductEntity Product { get; set; }
+        public OrderEntity Order { get; set; } = null!;
+        public ProductEntity Product { get; set; } = null!;
     }
 }

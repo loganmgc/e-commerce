@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Data.Data.Configurations
 {
-    public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
+    internal class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
@@ -12,8 +12,11 @@ namespace App.Data.Data.Configurations
             builder.Property(u => u.UserId)
                 .ValueGeneratedOnAdd()
                 .UseIdentityColumn();
+            builder.HasIndex(u => u.Email)
+                .IsUnique();
             builder.Property(u => u.Email)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(250);
             builder.Property(u => u.FirstName)
                 .IsRequired()
                 .HasMaxLength(50);

@@ -10,56 +10,62 @@ namespace App.Data.Repositories.Implenemtations
         {
         }
 
-        public async Task<IEnumerable<ProductEntity>> GetAllEnableProductsAsync()
-        {
-            var products = await _dbContext.Products
-                .Include(c => c.Category)
-                .Include(u => u.Seller)
-                .Where(p => p.Enabled == true)
-                .ToListAsync();
-            return products ?? Enumerable.Empty<ProductEntity>();
-        }
-
         public async Task<IEnumerable<ProductEntity>> GetAllNotEnableProductsAsync()
         {
             return await _dbContext.Products
+                .Where(p => p.Enabled == false)
                 .Include(c => c.Category)
-                .Include(u => u.Seller)
-                .Where(p => p.Enabled == true)
+                .Include(p => p.ProductImages)
+                .Include(d => d.Discount)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<ProductEntity>> GetAllProductsAsync()
         {
             return await _dbContext.Products
+                .Where (p => p.Enabled == true)
                 .Include(c => c.Category)
-                .Include(u => u.Seller)
+                .Include(p => p.ProductImages)
+                .Include(d => d.Discount)
+                .Include(pc => pc.ProductComments)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<ProductEntity>> GetProductsWithCategoriesAsync()
+        {
+            return await _dbContext.Products
+                .Where(p => p.Enabled == true)
+                .Include(c => c.Category)
+                .Include(c => c.ProductImages)
+                .ToListAsync();
+        }
+
 
         public async Task<ProductEntity?> GetProductByIdAsync(int id)
         {
             return await _dbContext.Products
                 .Include(c => c.Category)
                 .Include(u => u.Seller)
+                .Include(p => p.ProductImages)
+                .Include(d => d.Discount)
                 .SingleOrDefaultAsync(p => p.ProductId == id);
         }
 
         public async Task<IEnumerable<ProductEntity>> GetProductsByCategoryAsync(int categoryId)
         {
             return await _dbContext.Products
+                .Where(p => p.CategoryId == categoryId)
                 .Include(c => c.Category)
                 .Include(u => u.Seller)
-                .Where(p => p.CategoryId == categoryId)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<ProductEntity>> GetProductsBySellerAsync(int sellerId)
         {
             return await _dbContext.Products
+                .Where(p => p.SellerId == sellerId)
                 .Include(c => c.Category)
                 .Include(u => u.Seller)
-                .Where(p => p.SellerId == sellerId)
                 .ToListAsync();
         }
         

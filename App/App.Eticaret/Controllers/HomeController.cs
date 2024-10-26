@@ -1,4 +1,6 @@
+using App.Eticaret.Models.ViewModels.ContactForm;
 using App.Eticaret.Models.ViewModels.Product;
+using App.Service.Models.ContactFormDTOs;
 using App.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,8 +35,21 @@ namespace App.Eticaret.Controllers
 
         [Route("/contact")]
         [HttpPost]
-        public IActionResult Contact([FromForm] object newContactMessageModel)
+        public async Task<IActionResult> Contact([FromForm] CreateContactFormMessageViewModel newContactMessage)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(newContactMessage);
+            }
+
+            var contactFormDto = new AddContactFormDto
+            {
+                Name = newContactMessage.Name,
+                Email = newContactMessage.Email,
+                Message = newContactMessage.Message,
+            };
+            await _serviceManager.ContactFormService.AddContactForm(contactFormDto);
+            ViewBag.SuccessMessage = "Your message has been sent successfully.";
             return View();
         }
 
@@ -42,14 +57,15 @@ namespace App.Eticaret.Controllers
         [HttpGet]
         public async Task<IActionResult> Listing()
         {
-            var products = await _serviceManager.ProductService.GetAllEnableProductsAsync();
-            var productList = products.Select(p => new GetProductListViewModel
+            var products = await _serviceManager.ProductService.GetFeaturedProductsAsync();
+            var productList = products.Select(p => new ProductListingViewModel
             {
-                ProductId = p.ProductId,
-                CategoryId = p.CategoryId,
-                ProductName = p.Name,
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
                 CategoryName = p.CategoryName,
-                Price = p.Price
+                DiscountPercentage = p.DiscountPercentage,
+                ImageUrl = p.ImageUrl
             }).ToList();
 
             return View(productList);
@@ -59,39 +75,35 @@ namespace App.Eticaret.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductDetail([FromRoute] int productId)
         {
-            var (product, message) = await _serviceManager.ProductService.GetProductByIdAsync(productId);
-            if (message is not null)
+            var product = await _serviceManager.ProductService.GetProductByIdAsync(productId);
+            if(product is null)
             {
-                return RedirectToAction("Listing", "Home");
+                return RedirectToAction("Listing");
             }
-            ViewBag.Product = new GetProductViewModel()
+            var comments = await _serviceManager.ProductCommentService.GetAllCommentsByProductIdAsync(productId);
+            ViewBag.Product = new HomeProductDetailViewModel
             {
                 ProductId = product.ProductId,
-                CategoryId = product.CategoryId,
-                ProductName = product.Name,
-                CategoryName = product.CategoryName,
-                Price = product.Price,
+                Name = product.Name,
                 Details = product.Details,
+                Price = product.Price,
+                DiscountPercentage = product.DiscountPercentage,
+                DiscountedPrice = product.DiscountedPrice,
+                CategoryId = product.CategoryId,
+                CategoryName = product.CategoryName,
+                SellerName = product.SellerName,
                 StockAmount = product.StockAmount,
-                SellerId = product.SellerId,
-                SellerName = product.SellerName
+                ImageUrls = product.ImageUrls,
+                Reviews = comments.Select(c => new GetProductCommentViewModel
+                {
+                    ProductCommentId = c.ProductCommentId,
+                    Text = c.Text,
+                    StarCount = c.StarCount,
+                    Username = c.UserName,
+                    CreatedAt = DateTime.Now,
+                }).ToArray()
             };
-            var comments = await _serviceManager.ProductCommentService.GetAllCommentsByProductIdAsync(productId);
-            if (comments is null)
-            {
-                ViewBag.Empty = "Be the first to comment on this product";
-                return View();
-            }
-            ViewBag.Comments = comments.Select(c => new GetProductCommentViewModel
-            {
-                ProductCommentId = c.ProductCommentId,
-                UserId = c.UserId,
-                UserName = c.UserName,
-                Text = c.Text,
-                StarCount = c.StarCount,
-                CreatedAt = c.CreatedAt
-            }).ToList();
-            return View();
+            return View();           
         }
     }
 }

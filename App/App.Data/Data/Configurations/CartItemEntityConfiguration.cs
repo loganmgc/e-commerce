@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace App.Data.Data.Configurations
 {
-    public class CartItemEntityConfiguration : IEntityTypeConfiguration<CartItemEntity>
+    internal class CartItemEntityConfiguration : IEntityTypeConfiguration<CartItemEntity>
     {
         public void Configure(EntityTypeBuilder<CartItemEntity> builder)
         {
@@ -26,7 +26,7 @@ namespace App.Data.Data.Configurations
                 .OnDelete(DeleteBehavior.NoAction);
             builder.Property(c => c.Quantity)
                 .IsRequired()
-                .HasDefaultValue((byte)1);
+                .HasDefaultValue(1);
             builder.Property(c => c.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
