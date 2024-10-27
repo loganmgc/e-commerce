@@ -1,6 +1,6 @@
-﻿namespace App.Eticaret.Models.ViewModels
+﻿namespace App.Service.Models.UserDTOs
 {
-    public class LoginViewModel
+    public class LoginUserDto
     {
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;

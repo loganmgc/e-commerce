@@ -8,5 +8,6 @@
         IBlogRepository BlogRepository { get; }
         IContactFormRepository ContactFormRepository { get; }
         IDiscountRepository IDiscountRepository { get; }
+        IUserRepository UserRepository { get; }
     }
 }

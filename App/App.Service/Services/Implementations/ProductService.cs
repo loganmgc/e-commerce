@@ -1,4 +1,4 @@
-﻿using App.Data.Entities;
+﻿using App.Data.Data.Entities;
 using App.Data.Repositories.Interfaces;
 using App.Service.Helpers;
 using App.Service.Models.ProductDTOs;

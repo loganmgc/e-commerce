@@ -1,8 +1,7 @@
 ﻿using App.Data.Data.Entities;
-using App.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace App.Data
+namespace App.Data.Data
 {
     internal static class DbSeeder
     {

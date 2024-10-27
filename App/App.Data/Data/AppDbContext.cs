@@ -1,7 +1,6 @@
-using App.Data;
+using App.Data.Data;
 using App.Data.Data.Configurations;
 using App.Data.Data.Entities;
-using App.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 public class AppDbContext : DbContext

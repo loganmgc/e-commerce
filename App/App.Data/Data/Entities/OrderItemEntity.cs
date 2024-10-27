@@ -1,6 +1,4 @@
-﻿using App.Data.Entities;
-
-namespace App.Data.Data.Entities
+﻿namespace App.Data.Data.Entities
 {
     public class OrderItemEntity
     {

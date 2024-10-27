@@ -1,6 +1,4 @@
-﻿using App.Data.Entities;
-
-namespace App.Data.Data.Entities
+﻿namespace App.Data.Data.Entities
 {
     public class UserEntity
     {
@@ -10,7 +8,7 @@ namespace App.Data.Data.Entities
         public string LastName { get; set; } = null!;
         public string Password { get; set; } = null!;
         public int RoleId { get; set; }
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
         public DateTime CreatedAt { get; set; }
 
         public RoleEntity Role { get; set; } = null!;

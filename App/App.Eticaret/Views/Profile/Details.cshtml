@@ -1,5 +1,43 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model ProfileDetailsViewModel
 @{
+    ViewData["Title"] = "Profile Details";
 }
+<div class="container-fluid">
+    <div class="row">
+        <h2 class="col-12 text-center">Profile Details</h2>
+        <div class="col-12 col-md-6 offset-md-3">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success col-12 text-center">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            <form method="post" asp-controller="Profile" asp-action="Edit">
+                <div class="form-group">
+                    <label asp-for="FirstName">Firstname</label>
+                    <input class="form-control" asp-for="FirstName" required>
+                    <span class="text-danger" asp-validation-for="FirstName"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName">Lastname</label>
+                    <input class="form-control" asp-for="LastName" required>
+                    <span class="text-danger" asp-validation-for="LastName"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
+                    <input class="form-control disable" asp-for="Email" readonly>
+                    <span class="text-danger" asp-validation-for="Email"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CreatedAt">Member Since:</label>
+                    <input class="form-control" asp-for="CreatedAt" readonly>
+                    <span class="text-danger" asp-validation-for="CreatedAt"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="site-btn mr-auto">Edit Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

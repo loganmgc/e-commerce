@@ -11,6 +11,21 @@
         </ul>
         <div class="header__cart__price">item: <span>$150.00</span></div>
     </div>
+    <div class="header__top__right__auth">
+        @if (User?.Identity?.IsAuthenticated is true)
+        {
+            <div class="header__top__right__language">
+                <a asp-controller="Profile" asp-action="Details"><i class="fa fa-user"></i>   @User.FindFirst("name")?.Value</a>
+            </div>
+            <div class="header__top__right__auth">
+                <a asp-controller="Auth" asp-action="Logout"> Logout</a>
+            </div>
+        }
+        else
+        {
+            <a asp-controller="Auth" asp-action="Login"><i class="fa fa-user"></i> Login</a>
+        }
+    </div>
     <div class="humberger__menu__widget">
         <div class="header__top__right__language">
             <img src="~/theme/img/language.png" alt="">
@@ -21,9 +36,7 @@
                 <li><a href="#">English</a></li>
             </ul>
         </div>
-        <div class="header__top__right__auth">
-            <a asp-controller="Auth" asp-action="Login"><i class="fa fa-user"></i> Login</a>
-        </div>
+        
     </div>
     <nav class="humberger__menu__nav mobile-menu">
         <ul>

@@ -28,13 +28,26 @@
                                 <li><a href="#">English</a></li>
                             </ul>
                         </div>
-                        <div class="header__top__right__auth">
+                        @if (User?.Identity?.IsAuthenticated is true)
+                        {
+                            <div class="header__top__right__social">
+                                <a asp-controller="Profile" asp-action="Details"><i class="fa fa-user"></i>   @User.FindFirst("name")?.Value</a>
+                            </div>
+                            <div class="header__top__right__auth">
+                                <a asp-controller="Auth" asp-action="Logout"> Logout</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="header__top__right__auth">
                             <a asp-controller="Auth" asp-action="Login"><i class="fa fa-user"></i> Login</a>
-                        </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <div class="container">
         <div class="row">

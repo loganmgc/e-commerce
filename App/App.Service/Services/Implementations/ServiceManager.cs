@@ -10,8 +10,9 @@ namespace App.Service.Services.Implementations
         private readonly IBlogService _blogService;
         private readonly IContactFormService _contactFormService;
         private readonly IDiscountService _discountService;
+        private readonly IUserService _userService;
 
-        public ServiceManager(IProductService productService, ICategoryService categoryService, IProductCommentService productCommentService, IBlogService blogService, IContactFormService contactFormService, IDiscountService discountService)
+        public ServiceManager(IProductService productService, ICategoryService categoryService, IProductCommentService productCommentService, IBlogService blogService, IContactFormService contactFormService, IDiscountService discountService, IUserService userService)
         {
             _productService = productService;
             _categoryService = categoryService;
@@ -19,6 +20,7 @@ namespace App.Service.Services.Implementations
             _blogService = blogService;
             _contactFormService = contactFormService;
             _discountService = discountService;
+            _userService = userService;
         }
 
         public IProductService ProductService => _productService;
@@ -32,5 +34,7 @@ namespace App.Service.Services.Implementations
         public IContactFormService ContactFormService => _contactFormService;
 
         public IDiscountService DiscountService => _discountService;
+
+        public IUserService UserService => _userService;
     }
 }

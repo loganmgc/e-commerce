@@ -1,9 +1,14 @@
-﻿@using App.Eticaret.Models.ViewModels
-@model LoginViewModel
+﻿@model LoginViewModel
 
 <div class="container-fluid">
     <div class="row">
         <h2 class="col-12 text-center">Login</h2>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.Error))
+        {
+            <div class="alert alert-danger col-12 text-center">
+                @ViewBag.Error
+            </div>
+        }
         <div class="col-12 col-md-6 offset-md-3">
             <form asp-controller="Auth" asp-action="Login" method="post">
                 <div class="form-group">

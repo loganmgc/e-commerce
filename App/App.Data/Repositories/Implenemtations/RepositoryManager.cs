@@ -11,8 +11,9 @@ namespace App.Data.Repositories.Implenemtations
         private readonly IBlogRepository _blogRepository;
         private readonly IContactFormRepository _contactFormRepository;
         private readonly IDiscountRepository _discountRepository;
+        private readonly IUserRepository _userRepository;
 
-        public RepositoryManager(AppDbContext dbContext, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductCommentRepository productCommentRepository, IBlogRepository blogRepository, IContactFormRepository contactFormRepository, IDiscountRepository discountRepository)
+        public RepositoryManager(AppDbContext dbContext, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductCommentRepository productCommentRepository, IBlogRepository blogRepository, IContactFormRepository contactFormRepository, IDiscountRepository discountRepository, IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _productRepository = productRepository;
@@ -21,6 +22,7 @@ namespace App.Data.Repositories.Implenemtations
             _blogRepository = blogRepository;
             _contactFormRepository = contactFormRepository;
             _discountRepository = discountRepository;
+            _userRepository = userRepository;
         }
         public IProductRepository ProductRepository => _productRepository;
 
@@ -33,5 +35,7 @@ namespace App.Data.Repositories.Implenemtations
         public IContactFormRepository ContactFormRepository => _contactFormRepository;
 
         public IDiscountRepository IDiscountRepository => _discountRepository;
+
+        public IUserRepository UserRepository => _userRepository;
     }
 }

@@ -1,4 +1,4 @@
-﻿using App.Data.Entities;
+﻿using App.Data.Data.Entities;
 using App.Service.Models.ProductDTOs;
 
 namespace App.Service.Helpers

@@ -18,6 +18,7 @@ namespace App.Shared
             services.AddScoped<IBlogRepository, BlogRepository>();
             services.AddScoped<IContactFormRepository, ContactFormRepository>();
             services.AddScoped<IDiscountRepository, DiscountRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
 
             return services;
@@ -31,6 +32,7 @@ namespace App.Shared
             services.AddScoped<IBlogService, BlogService>();
             services.AddScoped<IContactFormService, ContactFormService>();
             services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IServiceManager, ServiceManager>();
 
             return services;

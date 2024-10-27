@@ -8,5 +8,6 @@
         IBlogService BlogService { get; }
         IContactFormService ContactFormService { get; }
         IDiscountService DiscountService { get; }
+        IUserService UserService { get; }
     }
 }
