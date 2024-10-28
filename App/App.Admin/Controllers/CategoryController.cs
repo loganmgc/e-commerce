@@ -1,10 +1,12 @@
 ﻿using App.Admin.Models.ViewModels.Category;
 using App.Service.Models.CategoryDtos;
 using App.Service.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class CategoryController : Controller
     {
         private readonly IServiceManager _serviceManager;

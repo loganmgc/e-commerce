@@ -10,6 +10,13 @@ namespace App.Data.Repositories.Implenemtations
         {
         }
 
+        public async Task<IEnumerable<UserEntity>> GetAllUsersAsync()
+        {
+            return await _dbContext.Users
+                .Include(u => u.Role)
+                .ToListAsync();
+        }
+
         public async Task<UserEntity?> GetUserByEmailAsync(string email)
         {
             return await _dbContext.Users

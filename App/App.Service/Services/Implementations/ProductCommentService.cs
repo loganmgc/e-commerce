@@ -31,6 +31,19 @@ namespace App.Service.Services.Implementations
             await _repositoryManager.ProductCommentRepository.SaveAsync();
         }
 
+        public async Task<bool> ApproveCommentAsync(int id)
+        {
+            var existingComment = await _repositoryManager.ProductCommentRepository.GetByIdAsync(id);
+            if (existingComment is null)
+            {
+                return false;
+            }
+            existingComment.IsConfirmed = true;
+            _repositoryManager.ProductCommentRepository.Update(existingComment);
+            await _repositoryManager.ProductCommentRepository.SaveAsync();
+            return true;
+        }
+
         public async Task<bool> DeleteCommentAsync(int id)
         {
             var existingComment = await _repositoryManager.ProductCommentRepository.GetByIdAsync(id);
@@ -59,6 +72,23 @@ namespace App.Service.Services.Implementations
         {
             var comments = await _repositoryManager.ProductCommentRepository.GetAllCommentsByUserIdAsync(userId);
             return _productCommentHelper.CommentsList(comments);
+        }
+
+        public async Task<IEnumerable<GetCommentDto?>> GetAllUnapprovedCommentsAsync()
+        {
+            var comments = await _repositoryManager.ProductCommentRepository.GetAllUnapprovedCommentsAsync();
+            var commentDto = comments.Select(c => new GetCommentDto
+            {
+                ProductCommentId = c.ProductCommentId,
+                ProductId = c.ProductId,
+                ProductName = c.Product.Name,
+                UserId = c.UserId,
+                UserName = $"{c.User.FirstName} {c.User.LastName}",
+                Text = c.Text,
+                StarCount = c.StarCount,
+                CreatedAt = c.CreatedAt
+            }).ToList();
+            return commentDto;
         }
 
         public async Task<GetCommentDto?> GetCommentByIdAsync(int id)

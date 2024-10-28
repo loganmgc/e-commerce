@@ -27,5 +27,14 @@ namespace App.Data.Repositories.Implenemtations
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<ProductCommentEntity?>> GetAllUnapprovedCommentsAsync()
+        {
+            return await _dbContext.ProductComments
+                .Where(c => c.IsConfirmed == false)
+                .Include(p => p.Product)
+                .Include(u => u.User)
+                .ToListAsync();
+        }
     }
 }

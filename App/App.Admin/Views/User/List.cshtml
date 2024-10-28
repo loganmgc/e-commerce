@@ -1,5 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewBag.Title = "User List";
 }
+@model List<UserListViewModel>
+<div class="container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success col-12 text-center">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger col-12 text-center">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    <h2>Users</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Email</th>
+                <th>Registration Date</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.CreatedAt.ToLongDateString()</td>
+                    <td>@user.RoleName</td>
+
+                    <td>
+                        @if (user.RoleName is "buyer")
+                        {
+                            <a class="btn btn-info" asp-controller="User" asp-action="Approve" asp-route-userId="@user.UserId">Approve Seller</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

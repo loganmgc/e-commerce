@@ -27,6 +27,19 @@ namespace App.Service.Services.Implementations
             await _repositoryManager.UserRepository.SaveAsync();
         }
 
+        public async Task<bool> ApproveSellerAsync(int id)
+        {
+            var existingUser = await _repositoryManager.UserRepository.GetByIdAsync(id);
+            if (existingUser is null)
+            {
+                return false;
+            }
+            existingUser.RoleId = 2;
+            _repositoryManager.UserRepository.Update(existingUser);
+            await _repositoryManager.UserRepository.SaveAsync();
+            return true;
+        }
+
         public async Task<bool> CheckEmailExistsAsync(string email)
         {
             var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email);
@@ -35,6 +48,21 @@ namespace App.Service.Services.Implementations
                 return false;
             }
             return true;
+        }
+
+        public async Task<IEnumerable<GetUserDto>> GetAllUsersAsync()
+        {
+            var userList = await _repositoryManager.UserRepository.GetAllUsersAsync();
+            var users = userList.Select(u => new GetUserDto
+            {
+                UserId = u.UserId,
+                Email = u.Email,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                RoleName = u.Role.Name,
+                CreatedAt = u.CreatedAt
+            });
+            return users;
         }
 
         public async Task<GetUserDto> GetUserByIdAsync(int id)

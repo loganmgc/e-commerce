@@ -6,5 +6,6 @@ namespace App.Data.Repositories.Interfaces
     {
         Task<IEnumerable<ProductCommentEntity?>> GetAllCommentsByUserIdAsync(int userId);
         Task<IEnumerable<ProductCommentEntity?>> GetAllCommentsByProductIdAsync(int productId);
+        Task<IEnumerable<ProductCommentEntity?>> GetAllUnapprovedCommentsAsync();
     }
 }

@@ -1,42 +1,52 @@
-﻿@{
+﻿@model List<CommentListViewModel>
+@{
     ViewBag.Title = "Product Comments";
 }
-
-<h2>Ürün Yorumları</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Yorum</th>
-            <th>Sahibi</th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="container">
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-success col-12 text-center">
+            @ViewBag.Error
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success col-12 text-center">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger col-12 text-center">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    <h2>Product Comments</h2>
+    <table class="table">
+        <thead>
             <tr>
-                <td><i>Ürün çok güzel, çeyizime aldım.</i></td>
-                <td>Merve Yılmaz</td>
-                <td>
-                    <button class="btn btn-primary" onclick="approveComment(1)">Approve</button>
-                </td>
+                <th>Comment</th>
+                <th>Owner</th>
+                <th>Product</th>
+                <th>Comment Date</th>
+                <th>Actions</th>
             </tr>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var comment in Model)
+            {
+                <tr>
+                    <td><i>@(comment.Text)</i></td>
+                    <td>@(comment.UserName)</td>
+                    <td>@(comment.ProductName)</td>
+                    <td>@(comment.CreatedAt.ToLongDateString())</td>
+                    <td>
+                        <a class="btn btn-primary" asp-controller="Comment" asp-action="Approve" asp-route-commentId="@(comment.ProductCommentId)">Approve</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
-@section scripts {
-    <script>
-        function approveComment(commentId) {
-            // Make a fetch request to the server to approve the comment
 
-            fetch(`/comment/${commentId}/approve`)
-                .then(response => response.json())
-                .then(data => {
-                    // Refresh the page to update the approved status
-                    location.reload();
-                })
-                .catch(error => {
-                    alert('Yorum onaylanamadı...');
-                });
-        }
-    </script>
-}

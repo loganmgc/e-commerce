@@ -12,5 +12,7 @@ namespace App.Service.Services.Interfaces
         Task AddCommentAsync(AddCommentDto commentDto);
         Task<bool> UpdateCommentAsync(int id, UpdateCommentDto commentDto);
         Task<bool> DeleteCommentAsync(int id);
+        Task<IEnumerable<GetCommentDto?>> GetAllUnapprovedCommentsAsync();
+        Task<bool> ApproveCommentAsync(int id);
     }
 }

@@ -10,5 +10,7 @@ namespace App.Service.Services.Interfaces
         Task<bool> RenewPasswordAsync(RenewPasswordDto passwordDto);
         Task<GetUserDto> GetUserByIdAsync(int id);
         Task<bool> UpdateUserAsync(UpdateUserDto userDto);
+        Task<IEnumerable<GetUserDto>> GetAllUsersAsync();
+        Task<bool> ApproveSellerAsync(int id);
     }
 }
