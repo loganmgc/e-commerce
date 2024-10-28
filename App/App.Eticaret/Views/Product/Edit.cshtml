@@ -18,8 +18,7 @@
                 </div>
             }
             <div class="col-12 col-md-6 offset-md-3">
-                <form class="row" asp-controller="Product" asp-action="Edit" method="post">
-                    <input type="hidden" asp-for="ProductId" value="2" />
+                <form class="row" asp-controller="Product" asp-action="Edit" asp-route-productId="@Model.ProductId" method="post">
                     <div class="form-group col-8">
                         <label asp-for="Name">Product Name</label>
                         <input asp-for="Name" class="form-control" required minlength="2" maxlength="100" />
@@ -49,9 +48,9 @@
                         <label asp-for="DiscountId">Discount</label><br />
                         <select asp-for="DiscountId" class="form-select w-100" required>
                             <option value="">Discount</option>
-                            @foreach (var cat in ViewBag.Discounts)
+                            @foreach (var dis in ViewBag.Discounts)
                             {
-                                <option value="@cat.Id">@cat.Rate</option>
+                                <option value="@dis.Id">@dis.Rate</option>
                             }
                         </select>
                         <span asp-validation-for="DiscountId" class="text-danger"></span>

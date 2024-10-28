@@ -1,4 +1,5 @@
-﻿using App.Data.Repositories.Interfaces;
+﻿using System.Linq.Expressions;
+using App.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.Data.Repositories.Implenemtations
@@ -40,6 +41,11 @@ namespace App.Data.Repositories.Implenemtations
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<T?> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
     }
 }

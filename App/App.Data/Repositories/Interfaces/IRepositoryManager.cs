@@ -9,5 +9,6 @@
         IContactFormRepository ContactFormRepository { get; }
         IDiscountRepository IDiscountRepository { get; }
         IUserRepository UserRepository { get; }
+        ICartItemRepository CartItemRepository { get; }
     }
 }

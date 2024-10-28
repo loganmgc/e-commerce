@@ -8,7 +8,7 @@ namespace App.Service.Services.Interfaces
         Task<IEnumerable<GetProductDto>> GetAllNotEnableProductsAsync();
         Task<GetProductDto> GetProductByIdAsync(int id);
         Task<IEnumerable<GetProductDto>> GetProductsByCategoryAsync(int categoryId);
-        Task<IEnumerable<GetProductDto>> GetProductsBySellerAsyınc(int sellerId);
+        Task<IEnumerable<GetProductsBySellerIdDto>> GetProductsBySellerIdAsync(int sellerId);
         Task AddProductAsync(AddProductDto productDto);
         Task<bool> UpdateAsync(int id, UpdateProductDto productDto);
         Task<(bool isDeleted, string message)> DeleteProductAsync(int id);

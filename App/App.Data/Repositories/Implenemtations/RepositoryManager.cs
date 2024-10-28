@@ -12,8 +12,9 @@ namespace App.Data.Repositories.Implenemtations
         private readonly IContactFormRepository _contactFormRepository;
         private readonly IDiscountRepository _discountRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ICartItemRepository _cartItemRepository;
 
-        public RepositoryManager(AppDbContext dbContext, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductCommentRepository productCommentRepository, IBlogRepository blogRepository, IContactFormRepository contactFormRepository, IDiscountRepository discountRepository, IUserRepository userRepository)
+        public RepositoryManager(AppDbContext dbContext, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductCommentRepository productCommentRepository, IBlogRepository blogRepository, IContactFormRepository contactFormRepository, IDiscountRepository discountRepository, IUserRepository userRepository, ICartItemRepository cartItemRepository)
         {
             _dbContext = dbContext;
             _productRepository = productRepository;
@@ -23,6 +24,7 @@ namespace App.Data.Repositories.Implenemtations
             _contactFormRepository = contactFormRepository;
             _discountRepository = discountRepository;
             _userRepository = userRepository;
+            _cartItemRepository = cartItemRepository;
         }
         public IProductRepository ProductRepository => _productRepository;
 
@@ -37,5 +39,7 @@ namespace App.Data.Repositories.Implenemtations
         public IDiscountRepository IDiscountRepository => _discountRepository;
 
         public IUserRepository UserRepository => _userRepository;
+
+        public ICartItemRepository CartItemRepository => _cartItemRepository;
     }
 }

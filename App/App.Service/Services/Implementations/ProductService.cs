@@ -60,10 +60,26 @@ namespace App.Service.Services.Implementations
             return _productHelper.ProductListing(products);
         }
 
-        public async Task<IEnumerable<GetProductDto>> GetProductsBySellerAsyınc(int sellerId)
+        public async Task<IEnumerable<GetProductsBySellerIdDto>> GetProductsBySellerIdAsync(int sellerId)
         {
             var products = await _repositoryManager.ProductRepository.GetProductsBySellerAsync(sellerId);
-            return _productHelper.ProductListing(products);
+            if (products is null)
+            {
+                return null;
+            }
+            var productList = products.Select(p => new GetProductsBySellerIdDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.Name,
+                Price = p.Price,
+                DiscountId = p.DiscountId,
+                DiscountPercentage = p.Discount == null ? null : p.Discount.DiscountRate,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category.Name,
+                StockAmount = p.StockAmount,
+                ImageUrl = p.ProductImages.First().Url,
+            }).ToList();
+            return productList;
         }
 
         public async Task AddProductAsync(AddProductDto productDto)

@@ -1,4 +1,6 @@
-﻿using App.Eticaret.Models.ViewModels.Profile;
+﻿using App.Eticaret.Models.ViewModels.Category;
+using App.Eticaret.Models.ViewModels.Discount;
+using App.Eticaret.Models.ViewModels.Profile;
 using App.Service.Models.UserDTOs;
 using App.Service.Services.Interfaces;
 using IdentityModel;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace App.Eticaret.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
         private readonly IServiceManager _serviceManager;
@@ -18,7 +21,6 @@ namespace App.Eticaret.Controllers
 
         [Route("/profile")]
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Details()
         {
             var userDto = await _serviceManager.UserService.GetUserByIdAsync(int.Parse(User.FindFirst(JwtClaimTypes.Id).Value));
@@ -64,9 +66,43 @@ namespace App.Eticaret.Controllers
 
         [Route("/my-products")]
         [HttpGet]
-        public IActionResult MyProducts()
+        [Authorize(Roles = "seller")]
+        public async Task<IActionResult> MyProducts()
         {
-            return View();
+            var productDto = await _serviceManager.ProductService.GetProductsBySellerIdAsync(int.Parse(User.FindFirst(JwtClaimTypes.Id).Value));
+            if (productDto is null)
+            {
+                ViewBag.Error = "You don't have any product. Start adding products";
+                return View();
+            }
+            var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
+            ViewBag.Categories = categories.Select(c => new CategoryViewModel
+            {
+                CategoryId = c.Id,
+                CategoryName = c.Name,
+                Color = c.Color,
+                IconCssClass = c.IconCssClass
+            });
+            var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
+            ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
+            {
+                Id = d.DiscountId,
+                Rate = d.DiscountRate
+            });
+            var productListViewModel = productDto.Select(p => new MyProductsViewModel
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                Price = p.Price,
+                DiscountId = p.DiscountId,
+                DiscountPercentage = p.DiscountPercentage,
+                DiscountedPrice = p.DiscountedPrice,
+                CategoryId = p.CategoryId,
+                CategoryName = p.CategoryName,
+                StockAmount = p.StockAmount,
+                ImageUrls = p.ImageUrl
+            }).ToList();
+            return View(productListViewModel);
         }
     }
 }

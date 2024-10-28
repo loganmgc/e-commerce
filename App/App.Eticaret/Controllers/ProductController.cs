@@ -5,6 +5,8 @@ using App.Eticaret.Models.ViewModels.Product;
 using App.Eticaret.Models.ViewModels.Category;
 using App.Service.Models.ProductCommentDTOs;
 using App.Eticaret.Models.ViewModels.Discount;
+using IdentityModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace App.Eticaret.Controllers
 {
@@ -40,6 +42,7 @@ namespace App.Eticaret.Controllers
 
         [Route("/product")]
         [HttpPost]
+        [Authorize(Roles = "seller")]
         public async Task<IActionResult> Create([FromForm] CreateProductViewModel product)
         {
             if (!ModelState.IsValid)
@@ -60,6 +63,7 @@ namespace App.Eticaret.Controllers
                 });
                 return View(product);
             }
+            var sellerId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
             var productDto = new AddProductDto
             {
                 Name = product.Name,
@@ -68,7 +72,7 @@ namespace App.Eticaret.Controllers
                 StockAmount = product.StockAmount,
                 CategoryId = product.CategoryId,
                 DiscountId = product.DiscountId,
-                SellerId = product.SellerId,
+                SellerId = sellerId
             };
             await _serviceManager.ProductService.AddProductAsync(productDto);
             TempData["SuccessMessage"] = "Product has been added successfully.";
@@ -134,14 +138,16 @@ namespace App.Eticaret.Controllers
                 });
                 return View(product);
             }
+
             var productDto = new UpdateProductDto()
             {
-                Id = product.ProductId,
+                Id = productId,
                 Name = product.Name,
                 CategoryId = product.CategoryId,
                 Price = product.Price,
                 Details = product.Details,
                 StockAmount = product.StockAmount,
+                DiscountId = product.DiscountId
             };
             await _serviceManager.ProductService.UpdateAsync(productId, productDto);
             TempData["SuccessMessage"] = "Product has been updated successfully.";

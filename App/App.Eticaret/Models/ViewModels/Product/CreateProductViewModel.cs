@@ -22,8 +22,6 @@ namespace App.Eticaret.Models.ViewModels.Product
 
         [Required(ErrorMessage = "Please select a category")]
         public int CategoryId { get; set; }
-        [Required]
-        public int SellerId { get; set; }
         public int? DiscountId { get; set; }
     }
 }

@@ -63,9 +63,9 @@ namespace App.Data.Repositories.Implenemtations
         public async Task<IEnumerable<ProductEntity>> GetProductsBySellerAsync(int sellerId)
         {
             return await _dbContext.Products
-                .Where(p => p.SellerId == sellerId)
                 .Include(c => c.Category)
-                .Include(u => u.Seller)
+                .Include(p => p.ProductImages)
+                .Include(d => d.Discount)
                 .ToListAsync();
         }
         

@@ -1,5 +1,6 @@
-﻿<!-- Breadcrumb Section Begin -->
-<section class="breadcrumb-section set-bg" data-setbg="img/breadcrumb.jpg">
+﻿@model List<EditCartViewModel>
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/theme/img/breadcrumb.jpg">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -21,6 +22,12 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="shoping__cart__table">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success col-12 text-center">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
                     <table>
                         <thead>
                             <tr>
@@ -32,72 +39,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="shoping__cart__item">
-                                    <img src="~/theme/img/cart/cart-1.jpg" alt="">
-                                    <h5>Vegetable’s Package</h5>
-                                </td>
-                                <td class="shoping__cart__price">
-                                    $55.00
-                                </td>
-                                <td class="shoping__cart__quantity">
-                                    <div class="quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="1">
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="shoping__cart__item">
+                                        <img style="width: 100px" src="@item.ProductImage" alt="">
+                                        <h5>@item.ProductName</h5>
+                                    </td>
+                                    <td class="shoping__cart__price">
+                                        @(item.ProductPrice.ToString("C"))
+                                    </td>
+                                    <td class="shoping__cart__quantity">
+                                        <div class="quantity">
+                                            <div class="pro-qty">
+                                                <input type="text" value="@item.Quantity">
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="shoping__cart__total">
-                                    $110.00
-                                </td>
-                                <td class="shoping__cart__item__close">
-                                    <span class="icon_close"></span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="shoping__cart__item">
-                                    <img src="~/theme/img/cart/cart-2.jpg" alt="">
-                                    <h5>Fresh Garden Vegetable</h5>
-                                </td>
-                                <td class="shoping__cart__price">
-                                    $39.00
-                                </td>
-                                <td class="shoping__cart__quantity">
-                                    <div class="quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="1">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="shoping__cart__total">
-                                    $39.99
-                                </td>
-                                <td class="shoping__cart__item__close">
-                                    <span class="icon_close"></span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="shoping__cart__item">
-                                    <img src="~/theme/img/cart/cart-3.jpg" alt="">
-                                    <h5>Organic Bananas</h5>
-                                </td>
-                                <td class="shoping__cart__price">
-                                    $69.00
-                                </td>
-                                <td class="shoping__cart__quantity">
-                                    <div class="quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="1">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="shoping__cart__total">
-                                    $69.99
-                                </td>
-                                <td class="shoping__cart__item__close">
-                                    <span class="icon_close"></span>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="shoping__cart__total">
+                                       @((item.ProductPrice * item.Quantity).ToString("C"))
+                                    </td>
+                                    <td class="shoping__cart__item__close">
+                                        <a asp-controller="Cart" asp-action="Delete" asp-route-cartItemId="@item.CartItemId"><span class="icon_close"></span></a>
+                                        
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -128,8 +95,15 @@
                 <div class="shoping__checkout">
                     <h5>Cart Total</h5>
                     <ul>
-                        <li>Subtotal <span>$454.98</span></li>
-                        <li>Total <span>$454.98</span></li>
+                        <li>Subtotal <span>
+                            @{decimal subtotal = 0;}
+                            @foreach (var item in Model)
+                                {
+                                    subtotal += (item.ProductPrice * item.Quantity);
+                                }
+                                @subtotal.ToString("C")
+                        </span></li>
+                        <li>Total <span>@subtotal.ToString("C")</span></li>
                     </ul>
                     <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
                 </div>
@@ -138,3 +112,4 @@
     </div>
 </section>
 <!-- Shoping Cart Section End -->
+

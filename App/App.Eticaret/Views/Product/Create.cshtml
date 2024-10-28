@@ -11,7 +11,6 @@
         }
         <div class="col-12 col-md-6 offset-md-3">
             <form class="row" asp-controller="Product" asp-action="Create" method="post">
-                <input type="hidden" asp-for="SellerId" value="2" />
                 <div class="form-group col-8">
                     <label asp-for="Name">Product Name</label>
                     <input asp-for="Name" class="form-control" required minlength="2" maxlength="100" />
