@@ -1,25 +1,20 @@
 ﻿using App.Data.Repositories.Interfaces;
 using App.Service.Models.DiscountDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
-    public class DiscountService : IDiscountService
+    public class DiscountService : ServiceBase, IDiscountService
     {
-        private readonly IRepositoryManager _repositoryManager;
-
-        public DiscountService(IRepositoryManager repositoryManager)
+        public DiscountService(IRepositoryManager repositoryManager, IMapper mapper) : base(repositoryManager, mapper)
         {
-            _repositoryManager = repositoryManager;
         }
+
         public async Task<IEnumerable<GetDiscountDto>> GetDiscountsForCreateProductAsync()
         {
             var discounts = await _repositoryManager.IDiscountRepository.GetAllAsync();
-            return discounts.Select(x => new GetDiscountDto
-            {
-                DiscountId = x.DiscountId,
-                DiscountRate = x.DiscountRate,
-            }).ToList();
+            return _mapper.Map<IEnumerable<GetDiscountDto>>(discounts);
         }
     }
 }

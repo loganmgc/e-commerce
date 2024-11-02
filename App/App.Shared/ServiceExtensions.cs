@@ -40,9 +40,14 @@ namespace App.Shared
             return services;
         }
 
+        public static IServiceCollection AddAutoMapperProfiles(this IServiceCollection services)
+        {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            return services;
+        }
+
         public static IServiceCollection AddHelpers(this IServiceCollection services)
         {
-            services.AddScoped<ProductHelper>();
             services.AddScoped<ProductCommentHelper>();
 
             return services;

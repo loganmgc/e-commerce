@@ -1,27 +1,24 @@
 ﻿using App.Data.Data.Entities;
 using App.Data.Repositories.Interfaces;
-using App.Service.Models.CategoryDtos;
 using App.Service.Models.CategoryDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
     public class CategoryService : ICategoryService
     {
         private readonly IRepositoryManager _repositoryManager;
+        private readonly IMapper _mapper;
 
-        public CategoryService(IRepositoryManager repositoryManager)
+        public CategoryService(IRepositoryManager repositoryManager, IMapper mapper)
         {
             _repositoryManager = repositoryManager;
+            _mapper = mapper;
         }
         public async Task AddCategoryAsync(AddCategoryDto categoryDto)
         {
-            var category = new CategoryEntity()
-            {
-                Name = categoryDto.Name,
-                Color = categoryDto.Color,
-                IconCssClass = categoryDto.IconCssClass,
-            };
+            var category = _mapper.Map<CategoryEntity>(categoryDto);
             await _repositoryManager.CategoryRepository.AddAsync(category);
             await _repositoryManager.CategoryRepository.SaveAsync();
         }
@@ -41,30 +38,15 @@ namespace App.Service.Services.Implementations
         public async Task<IEnumerable<GetCategoryDto>> GetAllCategoriesAsync()
         {
             var categories = await _repositoryManager.CategoryRepository.GetAllAsync();
-            var result = categories.Select(c => new GetCategoryDto
-            {
-                Id = c.CategoryId,
-                Name = c.Name,
-                Color = c.Color,
-                IconCssClass = c.IconCssClass
-            }).ToList();
-            return result;
+            return _mapper.Map<IEnumerable<GetCategoryDto>>(categories);
         }
 
         public async Task<IEnumerable<CategoryDto>> GetCategoriesForSliderAsync()
         {
             var products = await _repositoryManager.ProductRepository.GetProductsWithCategoriesAsync();
-            var categories = products
-                .GroupBy(p => p.CategoryId)
-                .Select(g => new CategoryDto
-                {
-                    Id = g.First().Category.CategoryId,
-                    Name = g.First().Category.Name,
-                    Color = g.First().Category.Color,
-                    IconCssClass = g.First().Category.IconCssClass,
-                    ImageUrl = g.First().ProductImages.Count != 0 ? g.First().ProductImages.First().Url : null
-                }).ToList();
-            return categories;
+            return products.GroupBy(p => p.CategoryId)
+                .Select(g => _mapper.Map<CategoryDto>(g.First()))
+                .ToList();
         }
 
         public async Task<GetCategoryDto> GetCategoryByIdAsync(int id)
@@ -72,28 +54,19 @@ namespace App.Service.Services.Implementations
             var category = await _repositoryManager.CategoryRepository.GetByIdAsync(id);
             if (category is null)
             {
-                throw new ArgumentException();
+                return null;
             }
-            var result = new GetCategoryDto()
-            {
-                Id = category.CategoryId,
-                Name = category.Name,
-                Color = category.Color,
-                IconCssClass = category.IconCssClass
-            };
-            return result;
+            return _mapper.Map<GetCategoryDto>(category);
         }
 
         public async Task<bool> UpdateCategoryAsync(int id, UpdateCategoryDto categoryDto)
         {
             var existingCategory = await _repositoryManager.CategoryRepository.GetByIdAsync(id);
-            if (existingCategory is null || existingCategory.CategoryId != categoryDto.Id)
+            if (existingCategory is null || existingCategory.CategoryId != categoryDto.CategoryId)
             {
                 return false;
             }
-            existingCategory.Name = categoryDto.Name;
-            existingCategory.Color = categoryDto.Color;
-            existingCategory.IconCssClass = categoryDto.IconCssClass;
+            _mapper.Map(categoryDto, existingCategory);
             _repositoryManager.CategoryRepository.Update(existingCategory);
             await _repositoryManager.CategoryRepository.SaveAsync();
             return true;

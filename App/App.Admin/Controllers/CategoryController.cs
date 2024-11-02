@@ -1,19 +1,17 @@
 ﻿using App.Admin.Models.ViewModels.Category;
-using App.Service.Models.CategoryDtos;
+using App.Service.Models.CategoryDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Admin.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class CategoryController : Controller
+    public class CategoryController : BaseController
     {
-        private readonly IServiceManager _serviceManager;
-
-        public CategoryController(IServiceManager serviceManager)
+        public CategoryController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
 
         [Route("/categories")]
@@ -21,13 +19,7 @@ namespace App.Admin.Controllers
         public async Task<IActionResult> List()
         {
             var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
-            var categoriesList = categories.Select(c => new CategoryListViewModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-                IconCssClass = c.IconCssClass,
-                Color = c.Color,
-            }).ToList();
+            var categoriesList = _mapper.Map<IEnumerable<CategoryListViewModel>>(categories);
             return View(categoriesList);
         }
 
@@ -46,12 +38,7 @@ namespace App.Admin.Controllers
             {
                 return View(newCategoryModel);
             }
-            var newCategory = new AddCategoryDto()
-            {
-                Name = newCategoryModel.Name,
-                IconCssClass = newCategoryModel.IconCssClass,
-                Color = newCategoryModel.Color
-            };
+            var newCategory = _mapper.Map<AddCategoryDto>(newCategoryModel);
             await _serviceManager.CategoryService.AddCategoryAsync(newCategory);
             TempData["SuccessMessage"] = "Category has been added successfully.";
             return RedirectToAction("Create");
@@ -66,13 +53,7 @@ namespace App.Admin.Controllers
             {
                 ViewBag.Error = "Category not found";
             }
-            var categoryViewModel = new EditCategoryViewModel()
-            {
-                Id = category.Id,
-                Name = category.Name,
-                IconCssClass = category.IconCssClass,
-                Color = category.Color
-            };
+            var categoryViewModel = _mapper.Map<EditCategoryViewModel>(category);
             return View(categoryViewModel);
         }
 
@@ -80,17 +61,13 @@ namespace App.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit([FromRoute] int categoryId, [FromForm] EditCategoryViewModel editCategoryModel)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(editCategoryModel);
-            }
-            var categoryDto = new UpdateCategoryDto()
-            {
-                Id = editCategoryModel.Id,
-                Name = editCategoryModel.Name,
-                IconCssClass = editCategoryModel.IconCssClass,
-                Color = editCategoryModel.Color
             };
+            editCategoryModel.CategoryId = categoryId;
+            var categoryDto = _mapper.Map<UpdateCategoryDto>(editCategoryModel);
             await _serviceManager.CategoryService.UpdateCategoryAsync(categoryId, categoryDto);
             TempData["SuccessMessage"] = "Category has been updated successfully.";
             return RedirectToAction("Edit");

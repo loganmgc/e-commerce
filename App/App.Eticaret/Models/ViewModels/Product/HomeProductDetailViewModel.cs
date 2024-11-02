@@ -1,11 +1,11 @@
-﻿namespace App.Eticaret.Models.ViewModels.Product
+﻿using App.Eticaret.Models.ViewModels.ProductComment;
+
+namespace App.Eticaret.Models.ViewModels.Product
 {
-    public class HomeProductDetailViewModel
+    public class HomeProductDetailViewModel : BaseProductViewModel
     {
         public int ProductId { get; set; }
-        public string Name { get; set; } = null!;
         public string? Details { get; set; }
-        public decimal Price { get; set; }
         public byte? DiscountPercentage { get; set; }
         public decimal? DiscountedPrice {  get; set; }
         public int CategoryId { get; set; }

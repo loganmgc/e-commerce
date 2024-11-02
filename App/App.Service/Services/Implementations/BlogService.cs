@@ -1,32 +1,23 @@
 ﻿using App.Data.Repositories.Interfaces;
 using App.Service.Models.BlogDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
-    public class BlogService : IBlogService
+    public class BlogService :ServiceBase, IBlogService
     {
-        private readonly IRepositoryManager _repositoryManager;
-
-        public BlogService(IRepositoryManager repositoryManager)
+        public BlogService(IRepositoryManager repositoryManager, IMapper mapper) : base(repositoryManager, mapper)
         {
-            _repositoryManager = repositoryManager;
         }
+
         public async Task<IEnumerable<BlogDto>> GetAllBlogsAsync()
         {
             var blogs = await _repositoryManager.BlogRepository.GetAllBlogsAsync();
-            var blogSummary = blogs.OrderByDescending(b => b.CreatedAt)
-                .Take(3)
-                .Select(b => new BlogDto
-                {
-                    Id = b.BlogId,
-                    Title = b.Title,
-                    Content = b.Content,
-                    ImageUrl = b.ImageUrl,
-                    CommentCount = b.BlogComments.Count,
-                    CreatedAt = b.CreatedAt
-                }).ToList();
-            return blogSummary;
+            var blogSummary = blogs
+                .OrderByDescending(b => b.CreatedAt)
+                .Take(3);
+            return _mapper.Map<IEnumerable<BlogDto>>(blogSummary);
         }
     }
 }

@@ -1,18 +1,16 @@
 ﻿using App.Admin.Models.ViewModels.User;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Admin.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
-        private readonly IServiceManager _serviceManager;
-
-        public UserController(IServiceManager serviceManager)
+        public UserController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
 
         [Route("/users")]
@@ -20,15 +18,7 @@ namespace App.Admin.Controllers
         public async Task<IActionResult> List()
         {
             var userList = await _serviceManager.UserService.GetAllUsersAsync();
-            var viewModel = userList.Select(u => new UserListViewModel
-            {
-                UserId = u.UserId,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email,
-                CreatedAt = DateTime.Now,
-                RoleName = u.RoleName,
-            }).ToList();
+            var viewModel = _mapper.Map<IEnumerable<UserListViewModel>>(userList);
             return View(viewModel);
         }
 

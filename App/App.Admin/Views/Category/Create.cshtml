@@ -8,29 +8,28 @@
 {
     <div class="alert alert-success col-12 text-center">
         @TempData["SuccessMessage"]
+        <a asp-action="List" class="btn btn-outline-primary ml-auto">Return to List</a>
     </div>
 }
-<form asp-controller="Category" asp-action="Create" method="post">
-    <div class="form-group">
-        <label asp-for="Name">Kategori Adı</label>
+<form asp-controller="Category" asp-action="Create" method="post" class="row">
+    <div class="form-group col-12">
+        <label asp-for="Name">Category Name</label>
         <input class="form-control" asp-for="Name" required/>
         <span class="text-danger" asp-validation-for="Name"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Color">Kategori Rengi</label>
-        <input class="form-control" asp-for="Color" required />
+    <div class="form-group col-1">
+        <label asp-for="Color">Category Color</label>
+        <input class="form-control" asp-for="Color" type="color" />
         <span class="text-danger" asp-validation-for="Color"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="IconCssClass">Kategori Icon Css Class</label>
+    <div class="form-group col-12">
+        <label asp-for="IconCssClass">Category Icon Css Class</label>
         <input class="form-control" asp-for="IconCssClass" required />
         <span class="text-danger" asp-validation-for="IconCssClass"></span>
     </div>
-    <div class="form-group">
+    <div class="form-group btn-group">
         <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-action="List" class="btn btn-outline-primary">Return to List</a>
     </div>
 </form>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

@@ -6,11 +6,11 @@ namespace App.Service.Services.Interfaces
     {
         Task AddUserAsync(AddUserDto userDto);
         Task<bool> CheckEmailExistsAsync(string email);
-        Task<GetUserDto> LoginUserAsync (LoginUserDto loginUser);
+        Task<GetUserWithIdDto> LoginUserAsync (LoginUserDto loginUser);
         Task<bool> RenewPasswordAsync(RenewPasswordDto passwordDto);
-        Task<GetUserDto> GetUserByIdAsync(int id);
+        Task<GetUserWithoutIdDto> GetUserByIdAsync(int id);
         Task<bool> UpdateUserAsync(UpdateUserDto userDto);
-        Task<IEnumerable<GetUserDto>> GetAllUsersAsync();
+        Task<IEnumerable<GetUserWithIdDto>> GetAllUsersAsync();
         Task<bool> ApproveSellerAsync(int id);
     }
 }

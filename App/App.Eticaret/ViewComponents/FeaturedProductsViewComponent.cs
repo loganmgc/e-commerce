@@ -1,30 +1,20 @@
 ﻿using App.Eticaret.Models.ViewModels.Product;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Eticaret.ViewComponents
 {
-    public class FeaturedProductsViewComponent : ViewComponent
+    public class FeaturedProductsViewComponent : BaseViewComponent
     {
-        private readonly IServiceManager _serviceManager;
-
-        public FeaturedProductsViewComponent(IServiceManager serviceManager)
+        public FeaturedProductsViewComponent(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var products = await _serviceManager.ProductService.GetFeaturedProductsAsync();
-            var featuredPro = products.Select(p => new ProductListingViewModel
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                CategoryName = p.CategoryName,
-                DiscountPercentage = p.DiscountPercentage,
-                ImageUrl = p.ImageUrl,
-            }).ToList();
+            var featuredPro = _mapper.Map<IEnumerable<ProductListingViewModel>>(products);
             return View(featuredPro);
         }
     }

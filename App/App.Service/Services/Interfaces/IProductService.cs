@@ -4,10 +4,7 @@ namespace App.Service.Services.Interfaces
 {
     public interface IProductService
     {
-        Task<IEnumerable<GetProductDto>> GetAllProductsAsync();
-        Task<IEnumerable<GetProductDto>> GetAllNotEnableProductsAsync();
         Task<GetProductDto> GetProductByIdAsync(int id);
-        Task<IEnumerable<GetProductDto>> GetProductsByCategoryAsync(int categoryId);
         Task<IEnumerable<GetProductsBySellerIdDto>> GetProductsBySellerIdAsync(int sellerId);
         Task AddProductAsync(AddProductDto productDto);
         Task<bool> UpdateAsync(int id, UpdateProductDto productDto);

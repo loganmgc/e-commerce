@@ -4,6 +4,7 @@ using System.Text;
 using App.Admin.Models.ViewModels;
 using App.Service.Models.UserDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace App.Admin.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : BaseController
     {
-        private readonly IServiceManager _serviceManager;
+       
         private readonly IConfiguration _config;
 
-        public AuthController(IServiceManager serviceManager, IConfiguration config)
+        public AuthController(IConfiguration config, IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
             _config = config;
         }
 
@@ -37,11 +37,7 @@ namespace App.Admin.Controllers
             {
                 return View();
             }
-            var loginDto = new LoginUserDto
-            {
-                Email = loginModel.Email,
-                Password = loginModel.Password,
-            };
+            var loginDto = _mapper.Map<LoginUserDto>(loginModel);
             var user = await _serviceManager.UserService.LoginUserAsync(loginDto);
             if (user is null || user.RoleName != "admin")
             {

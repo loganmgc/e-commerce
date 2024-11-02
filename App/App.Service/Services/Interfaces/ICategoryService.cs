@@ -1,5 +1,4 @@
-﻿using App.Service.Models.CategoryDtos;
-using App.Service.Models.CategoryDTOs;
+﻿using App.Service.Models.CategoryDTOs;
 
 namespace App.Service.Services.Interfaces
 {

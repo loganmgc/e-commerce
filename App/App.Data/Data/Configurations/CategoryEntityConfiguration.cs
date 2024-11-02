@@ -17,7 +17,7 @@ namespace App.Data.Data.Configurations
                 .HasMaxLength(100);
             builder.Property(c => c.Color)
                 .IsRequired()
-                .HasMaxLength(6);
+                .HasMaxLength(7);
             builder.Property(c => c.IconCssClass)
                 .IsRequired()
                 .HasMaxLength(50);

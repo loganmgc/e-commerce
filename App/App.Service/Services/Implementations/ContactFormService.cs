@@ -2,26 +2,19 @@
 using App.Data.Repositories.Interfaces;
 using App.Service.Models.ContactFormDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
-    public class ContactFormService : IContactFormService
+    public class ContactFormService : ServiceBase, IContactFormService
     {
-        private readonly IRepositoryManager _repositoryManager;
-
-        public ContactFormService(IRepositoryManager repositoryManager)
+        public ContactFormService(IRepositoryManager repositoryManager, IMapper mapper) : base(repositoryManager, mapper)
         {
-            _repositoryManager = repositoryManager;
         }
+
         public async Task AddContactForm(AddContactFormDto contactForm)
         {
-            var newContactForm = new ContactFormEntity
-            {
-                Name = contactForm.Name,
-                Email = contactForm.Email,
-                Message = contactForm.Message,
-                SeenAt = null
-            };
+            var newContactForm = _mapper.Map<ContactFormEntity>(contactForm);
             await _repositoryManager.ContactFormRepository.AddAsync(newContactForm);
             await _repositoryManager.ContactFormRepository.SaveAsync();
         }

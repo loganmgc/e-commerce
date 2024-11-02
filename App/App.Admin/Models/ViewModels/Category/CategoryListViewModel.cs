@@ -1,10 +1,7 @@
 ﻿namespace App.Admin.Models.ViewModels.Category
 {
-    public class CategoryListViewModel
+    public class CategoryListViewModel : BaseCategoryViewModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string Color { get; set; } = null!;
-        public string IconCssClass { get; set; } = null!;
+        public int CategoryId { get; set; }
     }
 }

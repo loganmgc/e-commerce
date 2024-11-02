@@ -2,27 +2,19 @@
 using App.Data.Repositories.Interfaces;
 using App.Service.Models.UserDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
-    public class UserService : IUserService
+    public class UserService : ServiceBase, IUserService
     {
-        private readonly IRepositoryManager _repositoryManager;
-
-        public UserService(IRepositoryManager repositoryManager)
+        public UserService(IRepositoryManager repositoryManager, IMapper mapper) : base(repositoryManager, mapper)
         {
-            _repositoryManager = repositoryManager;
         }
+
         public async Task AddUserAsync(AddUserDto userDto)
         {
-            var userEntity = new UserEntity
-            {
-                Email = userDto.Email,
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Password = userDto.Password,
-                RoleId = 3
-            };
+            var userEntity = _mapper.Map<UserEntity>(userDto);
             await _repositoryManager.UserRepository.AddAsync(userEntity);
             await _repositoryManager.UserRepository.SaveAsync();
         }
@@ -50,55 +42,30 @@ namespace App.Service.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<GetUserDto>> GetAllUsersAsync()
+        public async Task<IEnumerable<GetUserWithIdDto>> GetAllUsersAsync()
         {
             var userList = await _repositoryManager.UserRepository.GetAllUsersAsync();
-            var users = userList.Select(u => new GetUserDto
-            {
-                UserId = u.UserId,
-                Email = u.Email,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                RoleName = u.Role.Name,
-                CreatedAt = u.CreatedAt
-            });
-            return users;
+            return _mapper.Map<IEnumerable<GetUserWithIdDto>>(userList);
         }
 
-        public async Task<GetUserDto> GetUserByIdAsync(int id)
+        public async Task<GetUserWithoutIdDto> GetUserByIdAsync(int id)
         {
             var existingUser = await _repositoryManager.UserRepository.GetUserByIdAsync(id);
             if (existingUser is null)
             {
                 return null;
             }
-            var user = new GetUserDto
-            {
-                Email = existingUser.Email,
-                FirstName = existingUser.FirstName,
-                LastName = existingUser.LastName,
-                RoleName = existingUser.Role.Name,
-                CreatedAt = existingUser.CreatedAt
-            };
-            return user;
+            return _mapper.Map<GetUserWithoutIdDto>(existingUser);
         }
 
-        public async Task<GetUserDto> LoginUserAsync(LoginUserDto loginUser)
+        public async Task<GetUserWithIdDto> LoginUserAsync(LoginUserDto loginUser)
         {
             var existingUser = await _repositoryManager.UserRepository.GetUserByEmailAsync(loginUser.Email);
             if (existingUser is null || existingUser.Password != loginUser.Password || existingUser.Enabled == false)
             {
                 return null;
             }
-            var user = new GetUserDto
-            {
-                UserId = existingUser.UserId,
-                Email = existingUser.Email,
-                FirstName = existingUser.FirstName,
-                LastName = existingUser.LastName,
-                RoleName = existingUser.Role.Name,
-            };
-            return user;
+            return _mapper.Map<GetUserWithIdDto>(existingUser);
         }
 
         public async Task<bool> RenewPasswordAsync(RenewPasswordDto passwordDto)
@@ -121,8 +88,7 @@ namespace App.Service.Services.Implementations
             {
                 return false;
             }
-            existingUser.FirstName = userDto.FirstName;
-            existingUser.LastName = userDto.LastName;
+            existingUser = _mapper.Map(userDto, existingUser);
             _repositoryManager.UserRepository.Update(existingUser);
             await _repositoryManager.UserRepository.SaveAsync();
             return true;

@@ -1,34 +1,15 @@
 ﻿using App.Data.Data.Entities;
 using App.Data.Repositories.Interfaces;
-using App.Service.Helpers;
 using App.Service.Models.ProductDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
-    public class ProductService : IProductService
+    public class ProductService : ServiceBase, IProductService
     {
-        private IRepositoryManager _repositoryManager;
-        private readonly ProductHelper _productHelper;
-
-        public ProductService(IRepositoryManager repositoryManager, ProductHelper productHelper)
+        public ProductService(IRepositoryManager repositoryManager, IMapper mapper) : base(repositoryManager, mapper)
         {
-            _repositoryManager = repositoryManager;
-            _productHelper = productHelper;
-        }
-
-
-        public async Task<IEnumerable<GetProductDto>> GetAllNotEnableProductsAsync()
-        {
-            var products = await _repositoryManager.ProductRepository.GetAllNotEnableProductsAsync();
-            return _productHelper.ProductListing(products);
-        }
-
-        public async Task<IEnumerable<GetProductDto>> GetAllProductsAsync()
-        {
-            var products = await _repositoryManager.ProductRepository.GetAllProductsAsync();
-
-            return _productHelper.ProductListing(products);
         }
 
         public async Task<GetProductDto> GetProductByIdAsync(int id)
@@ -38,27 +19,9 @@ namespace App.Service.Services.Implementations
             {
                 return null;
             }
-            var result = new GetProductDto()
-            {
-                ProductId = product.ProductId,
-                SellerName = $"{product.Seller.FirstName} {product.Seller.LastName}",
-                CategoryId = product.CategoryId,
-                CategoryName = product.Category.Name,
-                Name = product.Name,
-                Price = product.Price,
-                Details = product.Details,
-                StockAmount = product.StockAmount,
-                DiscountPercentage = product.Discount == null ? null : product.Discount.DiscountRate,
-                ImageUrls = product.ProductImages.Select(i => i.Url).ToArray()
-            };
-            return (result);
+            return _mapper.Map<GetProductDto>(product);
         }
 
-        public async Task<IEnumerable<GetProductDto>> GetProductsByCategoryAsync(int categoryId)
-        {
-            var products = await _repositoryManager.ProductRepository.GetProductsByCategoryAsync(categoryId);
-            return _productHelper.ProductListing(products);
-        }
 
         public async Task<IEnumerable<GetProductsBySellerIdDto>> GetProductsBySellerIdAsync(int sellerId)
         {
@@ -67,34 +30,12 @@ namespace App.Service.Services.Implementations
             {
                 return null;
             }
-            var productList = products.Select(p => new GetProductsBySellerIdDto
-            {
-                ProductId = p.ProductId,
-                ProductName = p.Name,
-                Price = p.Price,
-                DiscountId = p.DiscountId,
-                DiscountPercentage = p.Discount == null ? null : p.Discount.DiscountRate,
-                CategoryId = p.CategoryId,
-                CategoryName = p.Category.Name,
-                StockAmount = p.StockAmount,
-                ImageUrl = p.ProductImages.First().Url,
-            }).ToList();
-            return productList;
+            return _mapper.Map<IEnumerable<GetProductsBySellerIdDto>>(products);
         }
 
         public async Task AddProductAsync(AddProductDto productDto)
         {
-            var product = new ProductEntity()
-            {
-                SellerId = productDto.SellerId,
-                CategoryId = productDto.CategoryId,
-                Name = productDto.Name,
-                Price = productDto.Price,
-                Details = productDto.Details,
-                StockAmount = productDto.StockAmount,
-                DiscountId = productDto.DiscountId,
-                Enabled = true
-            };
+            var product = _mapper.Map<ProductEntity>(productDto);
             await _repositoryManager.ProductRepository.AddAsync(product);
             await _repositoryManager.ProductRepository.SaveAsync();
         }
@@ -102,16 +43,11 @@ namespace App.Service.Services.Implementations
         public async Task<bool> UpdateAsync(int id, UpdateProductDto productDto)
         {
             var existingProduct = await _repositoryManager.ProductRepository.GetByIdAsync(id);
-            if (existingProduct is null || existingProduct.ProductId != productDto.Id)
+            if (existingProduct is null || existingProduct.ProductId != productDto.ProductId)
             {
                 return false;
             }
-            existingProduct.CategoryId = productDto.CategoryId;
-            existingProduct.Name = productDto.Name;
-            existingProduct.Price = productDto.Price;
-            existingProduct.Details = productDto.Details;
-            existingProduct.StockAmount = productDto.StockAmount;
-            existingProduct.DiscountId = productDto.DiscountId;
+            _mapper.Map(productDto, existingProduct);
             _repositoryManager.ProductRepository.Update(existingProduct);
             await _repositoryManager.ProductRepository.SaveAsync();
             return true;
@@ -132,16 +68,7 @@ namespace App.Service.Services.Implementations
         public async Task<IEnumerable<ProductListingDto>> GetFeaturedProductsAsync()
         {
             var product = await _repositoryManager.ProductRepository.GetAllProductsAsync();
-            var featuredProducts = product.Select(p => new ProductListingDto
-            {
-                Id = p.ProductId,
-                Name = p.Name,
-                Price = p.Price,
-                CategoryName = p.Category.Name,
-                DiscountPercentage = p.Discount == null ? null : p.Discount.DiscountRate,
-                ImageUrl = p.ProductImages.Count != 0 ? p.ProductImages.First().Url : null
-            }).ToList();
-            return featuredProducts;
+            return _mapper.Map<IEnumerable<ProductListingDto>>(product);
         }
 
         public async Task<IEnumerable<ProductListingDto>> GetFilteredProductsAsync(int count, string filterType)
@@ -150,21 +77,11 @@ namespace App.Service.Services.Implementations
             query = filterType switch
             {
                 "TopRated" => query.OrderByDescending(p => p.ProductComments.Any() ? p.ProductComments.Average(c => c.StarCount) : 0),
-                "MostCommented" => query.OrderByDescending(p => p.ProductComments.Any() ? p.ProductComments?.Count : 0),
+                "Review" => query.OrderByDescending(p => p.ProductComments.Any() ? p.ProductComments?.Count : 0),
                 "Latest" => query.OrderByDescending(p => p.CreatedAt),
                 _ => query
             };
-            var product = query.Take(count)
-                .Select(p => new ProductListingDto
-                {
-                    Id = p.ProductId,
-                    Name = p.Name,
-                    Price = p.Price,
-                    CategoryName = p.Category.Name,
-                    DiscountPercentage = p.Discount == null ? null : p.Discount.DiscountRate,
-                    ImageUrl = p.ProductImages.Count != 0 ? p.ProductImages.First().Url : null
-                }).ToList();
-            return product;
+            return _mapper.Map<IEnumerable<ProductListingDto>>(query);
         }
     }
 }

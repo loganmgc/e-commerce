@@ -139,12 +139,12 @@
                                             <ul class="product__item__pic__hover">
                                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
                                                 <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                                <li><a asp-controller="Cart" asp-action="AddProduct" asp-route-productId="@item.Id"><i class="fa fa-shopping-cart"></i></a></li>
+                                                <li><a asp-controller="Cart" asp-action="AddProduct" asp-route-productId="@item.ProductId"><i class="fa fa-shopping-cart"></i></a></li>
                                             </ul>
                                         </div>
                                         <div class="product__discount__item__text">
                                             <span>@(item.CategoryName)</span>
-                                            <h5><a asp-controller="Home" asp-action="ProductDetail" asp-route-productId="@item.Id">@(item.Name)</a></h5>
+                                            <h5><a asp-controller="Home" asp-action="ProductDetail" asp-route-productId="@item.ProductId">@(item.Name)</a></h5>
                                             <div class="product__item__price">@(item.DiscountedPrice?.ToString("C")) <span>@(item.Price.ToString("C"))</span></div>
                                         </div>
                                     </div>
@@ -190,7 +190,7 @@
                                     </ul>
                                 </div>
                                 <div class="product__item__text">
-                                    <h6><a asp-controller="Home" asp-action="ProductDetail" asp-route-productId="@item.Id">@(item.Name)</a></h6>
+                                    <h6><a asp-controller="Home" asp-action="ProductDetail" asp-route-productId="@item.ProductId">@(item.Name)</a></h6>
                                     <h5>@(item.Price.ToString("C"))</h5>
                                 </div>
                             </div>

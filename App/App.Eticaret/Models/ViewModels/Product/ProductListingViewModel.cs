@@ -1,10 +1,8 @@
 ﻿namespace App.Eticaret.Models.ViewModels.Product
 {
-    public class ProductListingViewModel
+    public class ProductListingViewModel : BaseProductViewModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = null!;
-        public decimal Price { get; set; }
+        public int ProductId { get; set; }
         public string CategoryName { get; set; } = null!;
         public byte? DiscountPercentage { get; set; }
         public decimal? DiscountedPrice => DiscountPercentage.HasValue ? Price - (Price * DiscountPercentage.Value / 100) : null;

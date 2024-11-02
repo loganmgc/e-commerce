@@ -8,6 +8,7 @@ builder.Services
     .AddCustomDbContext(builder.Configuration)
     .AddRepositories()
     .AddBusinessServices()
+    .AddAutoMapperProfiles()
     .AddHelpers()
     .AddCustomAuthentication(builder.Configuration);
 

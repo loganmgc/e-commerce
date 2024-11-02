@@ -1,19 +1,19 @@
 using App.Eticaret.Models.ViewModels.ContactForm;
 using App.Eticaret.Models.ViewModels.Product;
+using App.Eticaret.Models.ViewModels.ProductComment;
 using App.Service.Models.ContactFormDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Eticaret.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly IServiceManager _serviceManager;
-
-        public HomeController(IServiceManager serviceManager)
+        public HomeController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -42,12 +42,7 @@ namespace App.Eticaret.Controllers
                 return View(newContactMessage);
             }
 
-            var contactFormDto = new AddContactFormDto
-            {
-                Name = newContactMessage.Name,
-                Email = newContactMessage.Email,
-                Message = newContactMessage.Message,
-            };
+            var contactFormDto = _mapper.Map<AddContactFormDto>(newContactMessage);
             await _serviceManager.ContactFormService.AddContactForm(contactFormDto);
             ViewBag.SuccessMessage = "Your message has been sent successfully.";
             return View();
@@ -58,16 +53,7 @@ namespace App.Eticaret.Controllers
         public async Task<IActionResult> Listing()
         {
             var products = await _serviceManager.ProductService.GetFeaturedProductsAsync();
-            var productList = products.Select(p => new ProductListingViewModel
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                CategoryName = p.CategoryName,
-                DiscountPercentage = p.DiscountPercentage,
-                ImageUrl = p.ImageUrl
-            }).ToList();
-
+            var productList = _mapper.Map<IEnumerable<ProductListingViewModel>>(products);
             return View(productList);
         }
 
@@ -80,29 +66,10 @@ namespace App.Eticaret.Controllers
             {
                 return RedirectToAction("Listing");
             }
+            var productViewModel = _mapper.Map<HomeProductDetailViewModel>(product);
             var comments = await _serviceManager.ProductCommentService.GetAllCommentsByProductIdAsync(productId);
-            ViewBag.Product = new HomeProductDetailViewModel
-            {
-                ProductId = product.ProductId,
-                Name = product.Name,
-                Details = product.Details,
-                Price = product.Price,
-                DiscountPercentage = product.DiscountPercentage,
-                DiscountedPrice = product.DiscountedPrice,
-                CategoryId = product.CategoryId,
-                CategoryName = product.CategoryName,
-                SellerName = product.SellerName,
-                StockAmount = product.StockAmount,
-                ImageUrls = product.ImageUrls,
-                Reviews = comments.Select(c => new GetProductCommentViewModel
-                {
-                    ProductCommentId = c.ProductCommentId,
-                    Text = c.Text,
-                    StarCount = c.StarCount,
-                    Username = c.UserName,
-                    CreatedAt = DateTime.Now,
-                }).ToArray()
-            };
+            productViewModel.Reviews = _mapper.Map<IEnumerable<GetProductCommentViewModel>>(comments).ToArray();
+            ViewBag.Product = productViewModel;
             return View();           
         }
     }

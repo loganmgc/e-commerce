@@ -7,36 +7,22 @@ using App.Service.Models.ProductCommentDTOs;
 using App.Eticaret.Models.ViewModels.Discount;
 using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using App.Eticaret.Models.ViewModels.ProductComment;
 
 namespace App.Eticaret.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
-        private readonly IServiceManager _serviceManager;
-
-        public ProductController(IServiceManager serviceManager)
+        public ProductController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
 
         [Route("/product")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
-            ViewBag.Categories = categories.Select(c => new CategoryViewModel
-            {
-                CategoryId = c.Id,
-                CategoryName = c.Name,
-                Color = c.Color,
-                IconCssClass = c.IconCssClass
-            });
-            var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
-            ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
-            {
-                Id = d.DiscountId,
-                Rate = d.DiscountRate
-            });
+            await SetViewBagsAsync();
             return View();
         }
 
@@ -47,33 +33,11 @@ namespace App.Eticaret.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
-                ViewBag.Categories = categories.Select(c => new CategoryViewModel
-                {
-                    CategoryId = c.Id,
-                    CategoryName = c.Name,
-                    Color = c.Color,
-                    IconCssClass = c.IconCssClass
-                });
-                var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
-                ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
-                {
-                    Id = d.DiscountId,
-                    Rate = d.DiscountRate
-                });
+                await SetViewBagsAsync();
                 return View(product);
-            }
-            var sellerId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
-            var productDto = new AddProductDto
-            {
-                Name = product.Name,
-                Details = product.Details,
-                Price = product.Price,
-                StockAmount = product.StockAmount,
-                CategoryId = product.CategoryId,
-                DiscountId = product.DiscountId,
-                SellerId = sellerId
-            };
+            }           
+            var productDto = _mapper.Map<AddProductDto>(product);
+            productDto.SellerId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
             await _serviceManager.ProductService.AddProductAsync(productDto);
             TempData["SuccessMessage"] = "Product has been added successfully.";
             return RedirectToAction("Create");
@@ -88,31 +52,9 @@ namespace App.Eticaret.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
-            ViewBag.Categories = categories.Select(c => new CategoryViewModel
-            {
-                CategoryId = c.Id,
-                CategoryName = c.Name,
-                Color = c.Color,
-                IconCssClass = c.IconCssClass
-            });
-            var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
-            ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
-            {
-                Id = d.DiscountId,
-                Rate = d.DiscountRate
-            });
+            await SetViewBagsAsync();
 
-            var product = new UpdateProductViewModel()
-            {
-                ProductId = existingProduct.ProductId,
-                Name = existingProduct.Name,
-                Details = existingProduct.Details,
-                Price = existingProduct.Price,
-                StockAmount = existingProduct.StockAmount,
-                CategoryId = existingProduct.CategoryId,
-                DiscountId = existingProduct.DiscountId,
-            };
+            var product = _mapper.Map<UpdateProductViewModel>(existingProduct);
             return View(product);
         }
 
@@ -122,33 +64,12 @@ namespace App.Eticaret.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
-                ViewBag.Categories = categories.Select(c => new CategoryViewModel
-                {
-                    CategoryId = c.Id,
-                    CategoryName = c.Name,
-                    Color = c.Color,
-                    IconCssClass = c.IconCssClass
-                });
-                var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
-                ViewBag.Discounts = discounts.Select(d => new DiscountSelectViewModel
-                {
-                    Id = d.DiscountId,
-                    Rate = d.DiscountRate
-                });
+                await SetViewBagsAsync();
                 return View(product);
             }
 
-            var productDto = new UpdateProductDto()
-            {
-                Id = productId,
-                Name = product.Name,
-                CategoryId = product.CategoryId,
-                Price = product.Price,
-                Details = product.Details,
-                StockAmount = product.StockAmount,
-                DiscountId = product.DiscountId
-            };
+            var productDto = _mapper.Map<UpdateProductDto>(product);
+            productDto.ProductId = productId;
             await _serviceManager.ProductService.UpdateAsync(productId, productDto);
             TempData["SuccessMessage"] = "Product has been updated successfully.";
             return RedirectToAction("Edit");
@@ -176,18 +97,23 @@ namespace App.Eticaret.Controllers
         {
             if (!ModelState.IsValid)
             {
-
+                
             }
-            var comment = new AddCommentDto()
-            {
-                ProductId = newComment.ProductId,
-                UserId = newComment.UserId,
-                Text = newComment.Text,
-                StarCount = newComment.StarCount
-            };
-            await _serviceManager.ProductCommentService.AddCommentAsync(comment);
+            var commentDto = _mapper.Map<AddProductCommentDto>(newComment);
+            commentDto.UserId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
+            await _serviceManager.ProductCommentService.AddCommentAsync(commentDto);
 
             return RedirectToAction(nameof(HomeController.ProductDetail), "Home", new { productId });
+        }
+
+        [NonAction]
+        private async Task SetViewBagsAsync()
+        {
+            var categories = await _serviceManager.CategoryService.GetAllCategoriesAsync();
+            ViewBag.Categories = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
+
+            var discounts = await _serviceManager.DiscountService.GetDiscountsForCreateProductAsync();
+            ViewBag.Discounts = _mapper.Map<IEnumerable<DiscountSelectViewModel>>(discounts);
         }
     }
 }

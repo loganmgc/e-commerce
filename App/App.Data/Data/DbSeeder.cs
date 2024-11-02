@@ -23,15 +23,15 @@ namespace App.Data.Data
 
             modelBuilder.Entity<CategoryEntity>().HasData(
                 new List<CategoryEntity>{
-                    new() {CategoryId = 1, Name = "Fresh Meat", Color = "Blue", IconCssClass = "fas fa-drumstick-bite"},
-                    new() {CategoryId = 2, Name = "Vegetables", Color = "Red", IconCssClass = "fas fa-carrot"},
-                    new() {CategoryId = 3, Name = "Fresh Fruits", Color = "Green", IconCssClass = "fas fa-apple-alt" },
-                    new() {CategoryId = 4, Name = "Dried Fruits & Nuts", Color = "Brown", IconCssClass = "fas fa-seedling" },
-                    new() {CategoryId = 5, Name = "Ocean Foods", Color = "Purple", IconCssClass = "fas fa-fish" },
-                    new() {CategoryId = 6, Name = "Butter & Eggs", Color = "Yellow", IconCssClass = "fas fa-egg"},
-                    new() {CategoryId = 7, Name = "Fastfood", Color = "Pink", IconCssClass = "fas fa-hamburger"},
-                    new() {CategoryId = 8, Name = "Oatmeal", Color = "Grey", IconCssClass = "fas fa-bread-slice"},
-                    new() {CategoryId = 9, Name = "Juices", Color = "Orange", IconCssClass = "fas fa-wine-glass-alt"}
+                    new() {CategoryId = 1, Name = "Fresh Meat", Color = "#7D3C26", IconCssClass = "fas fa-drumstick-bite"},
+                    new() {CategoryId = 2, Name = "Vegetables", Color = "#339933", IconCssClass = "fas fa-carrot"},
+                    new() {CategoryId = 3, Name = "Fresh Fruits", Color = "#F28B82", IconCssClass = "fas fa-apple-alt" },
+                    new() {CategoryId = 4, Name = "Dried Fruits & Nuts", Color = "#A5693D", IconCssClass = "fas fa-seedling" },
+                    new() {CategoryId = 5, Name = "Ocean Foods", Color = "#1976D2", IconCssClass = "fas fa-fish" },
+                    new() {CategoryId = 6, Name = "Butter & Eggs", Color = "#F0E68C", IconCssClass = "fas fa-egg"},
+                    new() {CategoryId = 7, Name = "Fastfood", Color = "#FF8C00", IconCssClass = "fas fa-hamburger"},
+                    new() {CategoryId = 8, Name = "Oatmeal", Color = "#E0B0FF", IconCssClass = "fas fa-bread-slice"},
+                    new() {CategoryId = 9, Name = "Juices", Color = "#FFB6C1", IconCssClass = "fas fa-wine-glass-alt"}
                 }
             );
 

@@ -1,5 +1,4 @@
-﻿using App.Service.Models.CategoryDtos;
-using App.Service.Models.ContactFormDTOs;
+﻿using App.Service.Models.ContactFormDTOs;
 
 namespace App.Service.Services.Interfaces
 {

@@ -2,17 +2,16 @@
 using App.Data.Repositories.Interfaces;
 using App.Service.Models.CartItemDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
-    public class CartItemService : ICartItemService
+    public class CartItemService : ServiceBase, ICartItemService
     {
-        private readonly IRepositoryManager _repositoryManager;
-
-        public CartItemService(IRepositoryManager repositoryManager)
+        public CartItemService(IRepositoryManager repositoryManager, IMapper mapper) : base(repositoryManager, mapper)
         {
-            _repositoryManager = repositoryManager;
         }
+
         public async Task AddProductToCartAsync(AddCartItemDto product)
         {
             var existingCartItem = await _repositoryManager.CartItemRepository.FindAsync(c => c.UserId == product.UserId && c.ProductId == product.ProductId);
@@ -22,12 +21,7 @@ namespace App.Service.Services.Implementations
             }
             else
             {
-                var cartItem = new CartItemEntity
-                {
-                    UserId = product.UserId,
-                    ProductId = product.ProductId,
-                    Quantity = product.Quantity,
-                };
+                var cartItem = _mapper.Map<CartItemEntity>(product);
                 await _repositoryManager.CartItemRepository.AddAsync(cartItem);
             }
             await _repositoryManager.CartItemRepository.SaveAsync();
@@ -52,16 +46,7 @@ namespace App.Service.Services.Implementations
             {
                 return null;
             }
-            return cartItems.Select(c => new GetCartItemDto
-            {
-                CartItemId = c.CartItemId,
-                UserId = userId,
-                ProductId = c.ProductId,
-                ProductName = c.Product.Name,
-                ProductPrice = c.Product.Price,
-                ProductImage = c.Product.ProductImages.Count != 0 ? c.Product.ProductImages.First().Url : null,
-                Quantity = c.Quantity,
-            });
+            return _mapper.Map<IEnumerable<GetCartItemDto>>(cartItems);
         }
     }
 }

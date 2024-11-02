@@ -111,8 +111,6 @@
                                 <div class="review-form mb-5">
                                     <h4>Leave a Review</h4>
                                     <form asp-controller="Product" asp-action="Comment" asp-route-productId="@product.ProductId" method="post">
-                                        <input type="hidden" asp-for="ProductId" value="@product.ProductId" />
-                                        <input type="hidden" asp-for="UserId" value="1" />
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">

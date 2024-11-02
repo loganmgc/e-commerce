@@ -2,13 +2,7 @@
 
 namespace App.Admin.Models.ViewModels.Category
 {
-    public class CreateCategoryViewModel
+    public class CreateCategoryViewModel : BaseCategoryViewModel
     {
-        [Required, StringLength(100, MinimumLength = 2)]
-        public string Name { get; set; } = null!;
-        [Required, StringLength(6, MinimumLength = 3)]
-        public string Color { get; set; } = null!;
-        [Required, StringLength(50, MinimumLength = 2)]
-        public string IconCssClass { get; set; } = null!;
     }
 }

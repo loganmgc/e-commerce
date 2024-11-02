@@ -3,7 +3,7 @@ namespace App.Service.Models.BlogDTOs
 {
     public class BlogDto
     {
-        public int Id { get; set; }
+        public int BlogId { get; set; }
         public string Title { get; set; } = null!;
         public string Content { get; set; } = null!;
         public string? ImageUrl { get; set; }

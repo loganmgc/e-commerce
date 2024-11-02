@@ -1,28 +1,20 @@
 ﻿using App.Eticaret.Models.ViewModels.Category;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Eticaret.ViewComponents
 {
-    public class CategoriesSliderViewComponent : ViewComponent
+    public class CategoriesSliderViewComponent : BaseViewComponent
     {
-        private readonly IServiceManager _serviceManager;
-
-        public CategoriesSliderViewComponent(IServiceManager serviceManager)
+        public CategoriesSliderViewComponent(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
+
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var categoryDto = await _serviceManager.CategoryService.GetCategoriesForSliderAsync();
-            var categories = categoryDto.Select(c => new CategorySliderViewModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Color = c.Color,
-                IconCssClass = c.IconCssClass,
-                ImageUrl = c.ImageUrl
-            }).ToList();
+            var categories = _mapper.Map<IEnumerable<CategorySliderViewModel>>(categoryDto);
             return View(categories);
         }
     }

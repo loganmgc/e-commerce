@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using App.Service.Services.Interfaces;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 
 namespace App.Eticaret.Controllers
 {
-    public class OrderController : Controller
+    public class OrderController : BaseController
     {
+        public OrderController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
+        {
+        }
+
         [Route("/order")]
         [HttpPost]
         public IActionResult Create()

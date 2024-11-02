@@ -3,6 +3,7 @@ using App.Data.Repositories.Interfaces;
 using App.Service.Helpers;
 using App.Service.Models.ProductCommentDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 
 namespace App.Service.Services.Implementations
 {
@@ -10,23 +11,18 @@ namespace App.Service.Services.Implementations
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly ProductCommentHelper _productCommentHelper;
+        private readonly IMapper _mapper;
 
-        public ProductCommentService(IRepositoryManager repositoryManager, ProductCommentHelper productCommentHelper)
+        public ProductCommentService(IRepositoryManager repositoryManager, ProductCommentHelper productCommentHelper, IMapper mapper)
         {
             _repositoryManager = repositoryManager;
             _productCommentHelper = productCommentHelper;
+            _mapper = mapper;
         }
 
-        public async Task AddCommentAsync(AddCommentDto commentDto)
+        public async Task AddCommentAsync(AddProductCommentDto commentDto)
         {
-            var comment = new ProductCommentEntity()
-            {
-                UserId = commentDto.UserId,
-                ProductId = commentDto.ProductId,
-                Text = commentDto.Text,
-                StarCount = commentDto.StarCount,
-                IsConfirmed = true
-            };
+            var comment = _mapper.Map<ProductCommentEntity>(commentDto);
             await _repositoryManager.ProductCommentRepository.AddAsync(comment);
             await _repositoryManager.ProductCommentRepository.SaveAsync();
         }
@@ -56,74 +52,17 @@ namespace App.Service.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<GetCommentDto>> GetAllCommentsAsync()
-        {
-            var comments = await _repositoryManager.ProductCommentRepository.GetAllAsync();
-            return _productCommentHelper.CommentsList(comments);
-        }
-
         public async Task<IEnumerable<GetCommentDto?>> GetAllCommentsByProductIdAsync(int productId)
         {
             var comments = await _repositoryManager.ProductCommentRepository.GetAllCommentsByProductIdAsync(productId);
             return _productCommentHelper.CommentsList(comments);
         }
 
-        public async Task<IEnumerable<GetCommentDto?>> GetAllCommentsByUserIdAsync(int userId)
-        {
-            var comments = await _repositoryManager.ProductCommentRepository.GetAllCommentsByUserIdAsync(userId);
-            return _productCommentHelper.CommentsList(comments);
-        }
-
         public async Task<IEnumerable<GetCommentDto?>> GetAllUnapprovedCommentsAsync()
         {
             var comments = await _repositoryManager.ProductCommentRepository.GetAllUnapprovedCommentsAsync();
-            var commentDto = comments.Select(c => new GetCommentDto
-            {
-                ProductCommentId = c.ProductCommentId,
-                ProductId = c.ProductId,
-                ProductName = c.Product.Name,
-                UserId = c.UserId,
-                UserName = $"{c.User.FirstName} {c.User.LastName}",
-                Text = c.Text,
-                StarCount = c.StarCount,
-                CreatedAt = c.CreatedAt
-            }).ToList();
+            var commentDto = _mapper.Map<IEnumerable<GetCommentDto>>(comments);
             return commentDto;
-        }
-
-        public async Task<GetCommentDto?> GetCommentByIdAsync(int id)
-        {
-            var comment = await _repositoryManager.ProductCommentRepository.GetByIdAsync(id);
-            if (comment is null)
-            {
-                throw new ArgumentException();
-            }
-            var result = new GetCommentDto()
-            {
-                ProductCommentId = comment.ProductCommentId,
-                UserId = comment.UserId,
-                UserName = $"{comment.User.FirstName} {comment.User.LastName}",
-                ProductId = comment.ProductId,
-                ProductName = comment.Product.Name,
-                Text = comment.Text,
-                StarCount = comment.StarCount,
-                CreatedAt = comment.CreatedAt
-            };
-            return result;
-        }
-
-        public async Task<bool> UpdateCommentAsync(int id, UpdateCommentDto commentDto)
-        {
-            var existingComment = await _repositoryManager.ProductCommentRepository.GetByIdAsync(id);
-            if (existingComment is null || existingComment.ProductCommentId != commentDto.ProductCommentId)
-            {
-                return false;
-            }
-            existingComment.Text = commentDto.Text;
-            existingComment.StarCount = commentDto.StarCount;
-            _repositoryManager.ProductCommentRepository.Update(existingComment);
-            await _repositoryManager.ProductCommentRepository.SaveAsync();
-            return true;
         }
     }
 }

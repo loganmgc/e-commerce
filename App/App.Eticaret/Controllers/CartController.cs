@@ -1,6 +1,7 @@
 ﻿using App.Eticaret.Models.ViewModels.Cart;
 using App.Service.Models.CartItemDTOs;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,15 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace App.Eticaret.Controllers
 {
     [Authorize]
-    public class CartController : Controller
+    public class CartController : BaseController
     {
-        private readonly IServiceManager _serviceManager;
-
-        public CartController(IServiceManager serviceManager)
+        public CartController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
-        
+
         [Route("/add-to-cart/{productId:int}")]
         [HttpGet]
         public async Task<IActionResult> AddProduct([FromRoute] int productId)
@@ -49,22 +47,14 @@ namespace App.Eticaret.Controllers
                 ViewBag.Error = "";
                 return View();
             }
-            var viewModel = cart.Select(c => new EditCartViewModel
-            {
-                CartItemId = c.CartItemId,
-                ProductId = c.ProductId,
-                ProductName = c.ProductName,
-                ProductPrice = c.ProductPrice,
-                ProductImage = c.ProductImage,
-                Quantity = c.Quantity
-            }).ToList();
+            var viewModel = _mapper.Map<IEnumerable<CartItemListingViewModel>>(cart);
             
             return View(viewModel);
         }
 
         [Route("/cart")]
         [HttpPost]
-        public IActionResult Edit([FromForm] EditCartViewModel editCartViewModel)
+        public IActionResult Edit([FromForm] CartItemListingViewModel editCartViewModel)
         {
 
             return View();

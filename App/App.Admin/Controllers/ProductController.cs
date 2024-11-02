@@ -1,11 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using App.Service.Services.Interfaces;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Admin.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
+        public ProductController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
+        {
+        }
+
         [Route("/products/")]
         [HttpGet]
         public IActionResult List()

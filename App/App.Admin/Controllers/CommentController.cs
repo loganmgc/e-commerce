@@ -1,18 +1,16 @@
 ﻿using App.Admin.Models.ViewModels.Comment;
 using App.Service.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Admin.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class CommentController : Controller
+    public class CommentController : BaseController
     {
-        private readonly IServiceManager _serviceManager;
-
-        public CommentController(IServiceManager serviceManager)
+        public CommentController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
-            _serviceManager = serviceManager;
         }
 
         [Route("/comment")]
@@ -25,17 +23,7 @@ namespace App.Admin.Controllers
                 ViewBag.Error = "No comments pending for approval";
                 return View();
             }
-            var viewModel = comments.Select(c => new CommentListViewModel
-            {
-                ProductCommentId = c.ProductCommentId,
-                ProductId = c.ProductId,
-                ProductName = c.ProductName,
-                UserId = c.UserId, 
-                UserName = c.UserName,
-                Text = c.Text,
-                StarCount = c.StarCount,
-                CreatedAt = c.CreatedAt
-            }).ToList();
+            var viewModel = _mapper.Map<IEnumerable<CommentListViewModel>>(comments);
 
             return View(viewModel);
         }

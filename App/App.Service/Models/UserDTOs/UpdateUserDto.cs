@@ -1,9 +1,7 @@
 ﻿namespace App.Service.Models.UserDTOs
 {
-    public class UpdateUserDto
+    public class UpdateUserDto : BaseUserDto
     {
         public int UserId { get; set; }
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
     }
 }
