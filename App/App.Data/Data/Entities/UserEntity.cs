@@ -10,6 +10,8 @@
         public int RoleId { get; set; } = 3;
         public bool Enabled { get; set; } = true;
         public DateTime CreatedAt { get; set; }
+        public bool HasSellerRequest { get; set; } = false;
+        public string? ResetPasswordToken { get; set; }
 
         public RoleEntity Role { get; set; } = null!;
         public ICollection<ProductEntity>? Products { get; set; }

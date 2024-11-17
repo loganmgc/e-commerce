@@ -13,6 +13,7 @@ namespace App.Service.Mapping
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
                 .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.Product.Price))
                 .ForMember(dest => dest.ProductImage, opt => opt.MapFrom(src => src.Product.ProductImages.Count != 0 ? src.Product.ProductImages.First().Url : null));
+            CreateMap<UpdateCartItemDto, CartItemEntity>();
         }
     }
 }

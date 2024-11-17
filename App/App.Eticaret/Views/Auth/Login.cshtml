@@ -2,6 +2,12 @@
 
 <div class="container-fluid">
     <div class="row">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success col-12 text-center">
+                @TempData["SuccessMessage"]
+            </div>
+        }
         <h2 class="col-12 text-center">Login</h2>
         @if (!string.IsNullOrWhiteSpace(ViewBag.Error))
         {

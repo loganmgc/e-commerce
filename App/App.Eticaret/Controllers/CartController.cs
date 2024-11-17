@@ -14,16 +14,16 @@ namespace App.Eticaret.Controllers
         public CartController(IServiceManager serviceManager, IMapper mapper) : base(serviceManager, mapper)
         {
         }
-
+        [Authorize(Roles = "buyer, seller")]
         [Route("/add-to-cart/{productId:int}")]
-        [HttpGet]
-        public async Task<IActionResult> AddProduct([FromRoute] int productId)
+        [HttpPost]
+        public async Task<IActionResult> AddProduct([FromRoute] int productId, [FromForm] byte quantity = 1)
         {
             var cartItemDto = new AddCartItemDto
             {
                 ProductId = productId,
-                UserId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value),
-                Quantity = 1
+                UserId = GetUserId().Value,
+                Quantity = quantity
             };
             await _serviceManager.CartItemService.AddProductToCartAsync(cartItemDto);
             var prevUrl = Request.Headers.Referer.FirstOrDefault();
@@ -36,34 +36,41 @@ namespace App.Eticaret.Controllers
             return Redirect(prevUrl);
         }
 
-        [Authorize]
+        [Authorize(Roles = "buyer, seller")]
         [Route("/cart")]
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
-            var cart = await _serviceManager.CartItemService.GetCartItemsByUserIdAsync(int.Parse(User.FindFirst(JwtClaimTypes.Id).Value));
+            var cart = await _serviceManager.CartItemService.GetCartItemsByUserIdAsync(GetUserId().Value);
             if (cart is null)
             {
-                ViewBag.Error = "";
+                ViewBag.Error = "There's nothing in your cart. Start adding products to your cart";
                 return View();
             }
             var viewModel = _mapper.Map<IEnumerable<CartItemListingViewModel>>(cart);
-            
+
             return View(viewModel);
         }
 
-        [Route("/cart")]
+        [Authorize(Roles = "buyer, seller")]
+        [Route("/cart/update")]
         [HttpPost]
-        public IActionResult Edit([FromForm] CartItemListingViewModel editCartViewModel)
+        public async Task<IActionResult> UpdateCart(int cartItemId, byte quantity)
         {
-
-            return View();
+            var cartItem = await _serviceManager.CartItemService.UpdateCartItemAsync(new UpdateCartItemDto { CartItemId = cartItemId, Quantity = quantity });
+            if (cartItem is null)
+            {
+                TempData["Error"] = "Something went wrong. try again";
+                return RedirectToAction(nameof(Edit));
+            }
+            var model = _mapper.Map<CartItemListingViewModel>(cartItem);
+            return View(model);
         }
 
-
+        [Authorize(Roles = "buyer, seller")]
         [Route("/cart/{cartItemId:int}/delete")]
         [HttpGet]
-        public async Task<IActionResult> Delete([FromRoute]int cartItemId)
+        public async Task<IActionResult> Delete([FromRoute] int cartItemId)
         {
             var result = await _serviceManager.CartItemService.DeleteProductFromCartAsync(cartItemId);
             if (!result)
@@ -77,5 +84,19 @@ namespace App.Eticaret.Controllers
             return RedirectToAction(nameof(Edit));
         }
 
+        [Route("/chechout")]
+        [HttpGet]
+        public async Task<IActionResult> CheckOut()
+        {
+            var cart = await _serviceManager.CartItemService.GetCartItemsByUserIdAsync(GetUserId().Value);
+            if (cart is null)
+            {
+                ViewBag.Error = "There's nothing in your cart. Start adding products to your cart";
+                return View();
+            }
+            var viewModel = _mapper.Map<IEnumerable<CartItemListingViewModel>>(cart);
+
+            return View(viewModel);
+        }
     }
 }

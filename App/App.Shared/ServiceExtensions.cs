@@ -20,6 +20,8 @@ namespace App.Shared
             services.AddScoped<IDiscountRepository, DiscountRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICartItemRepository, CartItemRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
 
             return services;
@@ -35,7 +37,9 @@ namespace App.Shared
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICartItemService, CartItemService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IServiceManager, ServiceManager>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

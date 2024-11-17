@@ -2,7 +2,7 @@
 
 namespace App.Eticaret.Models.ViewModels.Auth
 {
-    public class LoginViewModel : BaseAuthViewModel
+    public class LoginViewModel : BaseAuthViewModelWithPassword
     {
     }
 }

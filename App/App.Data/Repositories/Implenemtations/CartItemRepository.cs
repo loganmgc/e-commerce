@@ -10,6 +10,14 @@ namespace App.Data.Repositories.Implenemtations
         {
         }
 
+        public async Task<CartItemEntity?> GetCartItemByIdAsync(int cartItemId)
+        {
+            return await _dbContext.CartItems
+                .Include(p => p.Product)
+                .ThenInclude(p => p.ProductImages)
+                .SingleOrDefaultAsync(c => c.CartItemId == cartItemId);
+        }
+
         public async Task<IEnumerable<CartItemEntity>> GetCartItemsByUserIdAsync(int userId)
         {
             return await _dbContext.CartItems

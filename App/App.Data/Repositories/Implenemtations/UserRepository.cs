@@ -30,5 +30,10 @@ namespace App.Data.Repositories.Implenemtations
                 .Include(u => u.Role)
                 .SingleOrDefaultAsync(u => u.UserId == id);
         }
+
+        public async Task<UserEntity?> GetUserByVerificationCode(string verificationCode)
+        {
+            return await _dbContext.Users.SingleOrDefaultAsync(u => u.ResetPasswordToken == verificationCode);
+        }
     }
 }

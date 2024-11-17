@@ -10,5 +10,7 @@
         IDiscountRepository IDiscountRepository { get; }
         IUserRepository UserRepository { get; }
         ICartItemRepository CartItemRepository { get; }
+        IOrderRepository OrderRepository { get; }
+        IOrderItemRepository OrderItemRepository { get; }
     }
 }

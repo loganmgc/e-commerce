@@ -47,5 +47,10 @@ namespace App.Data.Repositories.Implenemtations
         {
             return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
+
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbContext.Set<T>().AnyAsync(predicate);
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace App.Eticaret.Controllers
 
         [Route("/product")]
         [HttpGet]
+        [Authorize(Roles = "seller")]
         public async Task<IActionResult> Create()
         {
             await SetViewBagsAsync();
@@ -37,7 +38,7 @@ namespace App.Eticaret.Controllers
                 return View(product);
             }           
             var productDto = _mapper.Map<AddProductDto>(product);
-            productDto.SellerId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
+            productDto.SellerId = GetUserId().Value;
             await _serviceManager.ProductService.AddProductAsync(productDto);
             TempData["SuccessMessage"] = "Product has been added successfully.";
             return RedirectToAction("Create");
@@ -45,6 +46,7 @@ namespace App.Eticaret.Controllers
 
         [Route("/product/{productId:int}/edit")]
         [HttpGet]
+        [Authorize(Roles = "seller")]
         public async Task<IActionResult> Edit([FromRoute] int productId)
         {
             var existingProduct = await _serviceManager.ProductService.GetProductByIdAsync(productId);
@@ -60,6 +62,7 @@ namespace App.Eticaret.Controllers
 
         [Route("/product/{productId:int}/edit")]
         [HttpPost]
+        [Authorize(Roles = "seller")]
         public async Task<IActionResult> Edit([FromRoute] int productId, [FromForm] UpdateProductViewModel product)
         {
             if (!ModelState.IsValid)
@@ -95,12 +98,15 @@ namespace App.Eticaret.Controllers
         [HttpPost]
         public async Task<IActionResult> Comment([FromRoute] int productId, [FromForm] AddProductCommentViewModel newComment)
         {
-            if (!ModelState.IsValid)
+            var currentProductId = TempData["CurrentProductId"] as int?;
+            if(currentProductId != productId || !ModelState.IsValid)
             {
-                
+                return RedirectToAction(nameof(HomeController.ProductDetail), "Home", new { productId = currentProductId });
             }
+
             var commentDto = _mapper.Map<AddProductCommentDto>(newComment);
-            commentDto.UserId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
+            commentDto.ProductId = productId;
+            commentDto.UserId = GetUserId().Value;
             await _serviceManager.ProductCommentService.AddCommentAsync(commentDto);
 
             return RedirectToAction(nameof(HomeController.ProductDetail), "Home", new { productId });

@@ -1,5 +1,7 @@
-﻿using App.Service.Services.Interfaces;
+﻿using System.Security.Claims;
+using App.Service.Services.Interfaces;
 using AutoMapper;
+using IdentityModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Eticaret.Controllers
@@ -14,5 +16,6 @@ namespace App.Eticaret.Controllers
             _serviceManager = serviceManager;
             _mapper = mapper;
         }
+        protected int? GetUserId() => int.TryParse(User.FindFirstValue(JwtClaimTypes.Id), out int userId) ? userId : null;
     }
 }

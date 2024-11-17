@@ -11,5 +11,6 @@ namespace App.Data.Repositories.Interfaces
         void Delete(T entity);
         Task SaveAsync();
         Task<T?> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
     }
 }

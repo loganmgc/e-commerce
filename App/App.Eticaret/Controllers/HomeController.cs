@@ -66,6 +66,7 @@ namespace App.Eticaret.Controllers
             {
                 return RedirectToAction("Listing");
             }
+            TempData["CurrentProductId"] = productId;
             var productViewModel = _mapper.Map<HomeProductDetailViewModel>(product);
             var comments = await _serviceManager.ProductCommentService.GetAllCommentsByProductIdAsync(productId);
             productViewModel.Reviews = _mapper.Map<IEnumerable<GetProductCommentViewModel>>(comments).ToArray();

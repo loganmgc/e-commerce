@@ -10,5 +10,7 @@
         IDiscountService DiscountService { get; }
         IUserService UserService { get; }
         ICartItemService CartItemService { get; }
+        IEmailService EmailService { get; }
+        IOrderService OrderService { get; }
     }
 }

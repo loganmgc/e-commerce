@@ -2,7 +2,7 @@
 
 namespace App.Eticaret.Models.ViewModels.Auth
 {
-    public class RegisterUserViewModel : BaseAuthViewModel
+    public class RegisterUserViewModel : BaseAuthViewModelWithPassword
     {
         
         [Required(ErrorMessage = "Firstname is required"),

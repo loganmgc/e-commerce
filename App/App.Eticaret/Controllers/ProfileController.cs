@@ -2,7 +2,6 @@
 using App.Service.Models.UserDTOs;
 using App.Service.Services.Interfaces;
 using AutoMapper;
-using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +19,7 @@ namespace App.Eticaret.Controllers
         [HttpGet]
         public async Task<IActionResult> Details()
         {
-            var userDto = await _serviceManager.UserService.GetUserByIdAsync(int.Parse(User.FindFirst(JwtClaimTypes.Id).Value));
+            var userDto = await _serviceManager.UserService.GetUserByIdAsync(GetUserId().Value);
             if (userDto is null)
             {
                 return RedirectToAction("Index", "Home");
@@ -38,16 +37,22 @@ namespace App.Eticaret.Controllers
                 return RedirectToAction(nameof(Details));
             }
             var user = _mapper.Map<UpdateUserDto>(editMyProfileModel);
-            user.UserId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
+            user.UserId = GetUserId().Value;
             await _serviceManager.UserService.UpdateUserAsync(user);
             return RedirectToAction(nameof(Details));
         }
 
         [Route("/my-orders")]
         [HttpGet]
-        public IActionResult MyOrders()
+        public async Task<IActionResult> MyOrders()
         {
-            return View();
+            var orders = await _serviceManager.OrderService.GetOrdersByUserIdAsync(GetUserId().Value);
+            if (orders is null)
+            {
+                ViewBag.ErrorMessage = "You don't have any orders";
+            }
+            var viewModel = _mapper.Map<IEnumerable<MyOrdersViewModel>>(orders);
+            return View(viewModel);
         }
 
         [Route("/my-products")]
@@ -55,7 +60,7 @@ namespace App.Eticaret.Controllers
         [Authorize(Roles = "seller")]
         public async Task<IActionResult> MyProducts()
         {
-            var productDto = await _serviceManager.ProductService.GetProductsBySellerIdAsync(int.Parse(User.FindFirst(JwtClaimTypes.Id).Value));
+            var productDto = await _serviceManager.ProductService.GetProductsBySellerIdAsync(GetUserId().Value);
             if (productDto is null)
             {
                 ViewBag.Error = "You don't have any product. Start adding products";

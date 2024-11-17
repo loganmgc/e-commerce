@@ -12,5 +12,8 @@ namespace App.Service.Services.Interfaces
         Task<bool> UpdateUserAsync(UpdateUserDto userDto);
         Task<IEnumerable<GetUserWithIdDto>> GetAllUsersAsync();
         Task<bool> ApproveSellerAsync(int id);
+        Task<GetUserWithIdDto> GetUserByEmailAsync(string email);
+        Task<bool> IsThereVerificationCode(string verificationCode);
+        Task<bool> RenewPasswordWithVerificationCodeAsync(RenewPasswordWithVerificationCodeDto passwordDto);
     }
 }

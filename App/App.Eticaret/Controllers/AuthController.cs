@@ -83,7 +83,7 @@ namespace App.Eticaret.Controllers
                 issuer: "ETicaret",
                 audience: "ETicaret",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(10),
+                expires: DateTime.Now.AddMinutes(50),
                 signingCredentials: new SigningCredentials(symmetrickey, SecurityAlgorithms.HmacSha256)
                 );
 
@@ -108,40 +108,67 @@ namespace App.Eticaret.Controllers
 
         [Route("/forgot-password")]
         [HttpPost]
-        public IActionResult ForgotPassword([FromForm] object forgotPasswordMailModel)
+        public async Task<IActionResult> ForgotPassword([FromForm] ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var user = await _serviceManager.UserService.CheckEmailExistsAsync(model.Email);
+            if (user)
+            {
+                ModelState.AddModelError(string.Empty, "User not found.");
+                return View(model);
+            }
+            await _serviceManager.EmailService.SendPasswwordResetEmailAsync(model.Email);
+            return RedirectToAction("ForgotPasswordSuccess");
+        }
+
+        [Route("/forgot-password/success")]
+        public IActionResult ForgotPasswordSuccess()
         {
             return View();
         }
 
         [Route("/renew-password/{verificationCode}")]
         [HttpGet]
-        public IActionResult RenewPassword([FromRoute] string verificationCode)
+        public async Task<IActionResult> RenewPassword([FromRoute] string verificationCode)
         {
-            return View();
+            if (string.IsNullOrWhiteSpace(verificationCode))
+            {
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+            var user = await _serviceManager.UserService.IsThereVerificationCode(verificationCode);
+            if (!user)
+            {
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+            return View(new RenewPasswordWithVerificationCodeViewModel { VerificationCode = verificationCode});
         }
 
-        [Route("/renew-password")]
+        [ValidateAntiForgeryToken]
+        [Route("/renew-password/{verificationCode}")]
         [HttpPost]
-        public IActionResult RenewPassword([FromForm] RenewPasswordViewModel newPassword)
+        public async Task<IActionResult> RenewPassword([FromForm] RenewPasswordWithVerificationCodeViewModel renewPassword)
         {
-            //    if (!ModelState.IsValid)
-            //    {
-            //        return View();
-            //    }
-            //    var userId = int.Parse(User.FindFirst(JwtClaimTypes.Id).Value);
-            //    var password = new RenewPasswordDto
-            //    {
-            //        UserId = userId,
-            //        OldPassword = newPassword.OldPassword,
-            //        NewPassword = newPassword.NewPassword,
-            //    };
-            //    if(!await _serviceManager.UserService.RenewPassword(password))
-            //    {
-            //        ModelState.AddModelError("OldPassword", "Password incorrectly entered");
-            //        return View();
-            //    }
-            //    TempData["SuccessMessage"] = "Password has been successfully changed";
-            return View();
+            if (!ModelState.IsValid)
+            {
+                return View(renewPassword);
+            }
+            var user = await _serviceManager.UserService.IsThereVerificationCode(renewPassword.VerificationCode);
+            if(!user)
+            {
+                ViewBag.Error = "Verification code is invalid or expired";
+            }
+            var password = _mapper.Map<RenewPasswordWithVerificationCodeDto>(renewPassword);
+            var result = await _serviceManager.UserService.RenewPasswordWithVerificationCodeAsync(password);
+            if (!result)
+            {
+                ViewBag.Error = "Something went wrong. Try again";
+                return View(renewPassword);
+            }
+            TempData["SuccessMessage"] = "The password was successfully changed. You can log in with your new password";
+            return RedirectToAction(nameof(Login));
         }
 
         [Authorize]

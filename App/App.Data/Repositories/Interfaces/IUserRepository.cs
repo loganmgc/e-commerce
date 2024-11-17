@@ -7,5 +7,6 @@ namespace App.Data.Repositories.Interfaces
         Task<UserEntity?> GetUserByEmailAsync(string email);
         Task<UserEntity?> GetUserByIdAsync(int id);
         Task<IEnumerable<UserEntity>> GetAllUsersAsync();
+        Task<UserEntity?> GetUserByVerificationCode(string verificationCode);
     }
 }

@@ -1,4 +1,8 @@
-﻿@model List<CartItemListingViewModel>
+﻿@using App.Eticaret.Controllers
+@model List<CartItemListingViewModel>
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
 <!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-section set-bg" data-setbg="/theme/img/breadcrumb.jpg">
     <div class="container">
@@ -46,7 +50,7 @@
                                         <img style="width: 100px" src="@item.ProductImage" alt="">
                                         <h5>@item.ProductName</h5>
                                     </td>
-                                    <td class="shoping__cart__price">
+                                    <td class="shoping__cart__price" data-unitprice="@item.ProductPrice">
                                         @(item.ProductPrice.ToString("C"))
                                     </td>
                                     <td class="shoping__cart__quantity">
@@ -57,11 +61,11 @@
                                         </div>
                                     </td>
                                     <td class="shoping__cart__total">
-                                       @((item.ProductPrice * item.Quantity).ToString("C"))
+                                        @(item.TotalPrice.ToString("C"))
                                     </td>
                                     <td class="shoping__cart__item__close">
-                                        <a asp-controller="Cart" asp-action="Delete" asp-route-cartItemId="@item.CartItemId"><span class="icon_close"></span></a>
-                                        
+                                        <a asp-controller="Cart" asp-action="Delete" asp-route-cartItemId="@item.CartItemId" data-cartitemid="@item.CartItemId" class="icon_close"></a>
+
                                     </td>
                                 </tr>
                             }
@@ -73,43 +77,63 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="shoping__cart__btns">
-                    <a href="#" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
-                    <a href="#" class="primary-btn cart-btn cart-btn-right">
-                        <span class="icon_loading"></span>
-                        Upadate Cart
-                    </a>
+                    <a asp-controller="Home" asp-action="Listing" class="primary-btn cart-btn"><< CONTINUE SHOPPING</a>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="shoping__continue">
-                    <div class="shoping__discount">
-                        <h5>Discount Codes</h5>
-                        <form action="#">
-                            <input type="text" placeholder="Enter your coupon code">
-                            <button type="submit" class="site-btn">APPLY COUPON</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="shoping__checkout">
                     <h5>Cart Total</h5>
                     <ul>
-                        <li>Subtotal <span>
-                            @{decimal subtotal = 0;}
-                            @foreach (var item in Model)
-                                {
-                                    subtotal += (item.ProductPrice * item.Quantity);
-                                }
-                                @subtotal.ToString("C")
-                        </span></li>
-                        <li>Total <span>@subtotal.ToString("C")</span></li>
+                        <li>
+                            Total
+                            <span class="cart-total-price">
+                                $@(Model.Sum(item => item.TotalPrice))
+                            </span>
+                        </li>
                     </ul>
-                    <a href="#" class="primary-btn">PROCEED TO CHECKOUT</a>
+                    <a asp-controller="Cart" asp-action="Checkout" class="primary-btn">PROCEED TO CHECKOUT</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 <!-- Shoping Cart Section End -->
+@section Scripts {
+    <script>        
+        $(function () {
+            $(".pro-qty").on("click", ".qtybtn", function () {
+                const input = $(this).closest(".pro-qty").find("input");
+                const tr = $(this).closest("tr");
+                const quantity = parseInt(input.val(), 10);
+                const removeBtn = tr.find("a.icon_close");
+                const cartItemId = removeBtn.attr("data-cartitemid");
+                const unitPrice = parseFloat(tr.find(".shoping__cart__price").data("unitprice"));
 
+                if (quantity <= 0) {
+                    removeBtn[0].click();
+                    return;
+                }
+
+                $.ajax({
+                    url: "@(Url.Action(nameof(CartController.UpdateCart), "Cart"))",
+                    type: "POST",
+                    data: {
+                        cartItemId: cartItemId,
+                        quantity: quantity
+                    },
+                    success: function (response) {
+                        const totalPrice = unitPrice * quantity;
+                        tr.find(".shoping__cart__total").text("₺" + totalPrice.toFixed(2));
+
+                        const cartTotalPrice = $(".cart-total-price");
+                        const total = Array.from(document.getElementsByClassName("shoping__cart__total"))
+                            .map(x => parseFloat(x.innerText.replace("₺", "").replace(",", ".")))
+                            .reduce((a, b) => a + b, 0);
+
+                        cartTotalPrice.text("₺" + total.toFixed(2));
+                    }
+                });
+            });
+        });
+    </script>
+}

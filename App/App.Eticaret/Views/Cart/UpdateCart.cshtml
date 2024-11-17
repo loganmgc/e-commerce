@@ -1,0 +1,27 @@
+﻿@model CartItemListingViewModel
+@{
+    Layout = null;
+}
+<tr>
+    <td class="shoping__cart__item">
+        <img style="width: 100px" src="@Model.ProductImage" alt="">
+        <h5>@Model.ProductName</h5>
+    </td>
+    <td class="shoping__cart__price">
+        @(Model.ProductPrice.ToString("C"))
+    </td>
+    <td class="shoping__cart__quantity">
+        <div class="quantity">
+            <div class="pro-qty">
+                <input type="text" value="@Model.Quantity">
+            </div>
+        </div>
+    </td>
+    <td class="shoping__cart__total">
+        @(Model.TotalPrice.ToString("C"))
+    </td>
+    <td class="shoping__cart__item__close">
+        <a asp-controller="Cart" asp-action="Delete" asp-route-cartItemId="@Model.CartItemId" data-cartitemid="@Model.CartItemId" class="icon_close"></a>
+
+    </td>
+</tr>

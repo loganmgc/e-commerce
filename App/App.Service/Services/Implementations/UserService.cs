@@ -48,6 +48,16 @@ namespace App.Service.Services.Implementations
             return _mapper.Map<IEnumerable<GetUserWithIdDto>>(userList);
         }
 
+        public async Task<GetUserWithIdDto> GetUserByEmailAsync(string email)
+        {
+            var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email);
+            if (user is null)
+            {
+                return null;
+            }
+            return _mapper.Map<GetUserWithIdDto>(user);
+        }
+
         public async Task<GetUserWithoutIdDto> GetUserByIdAsync(int id)
         {
             var existingUser = await _repositoryManager.UserRepository.GetUserByIdAsync(id);
@@ -56,6 +66,16 @@ namespace App.Service.Services.Implementations
                 return null;
             }
             return _mapper.Map<GetUserWithoutIdDto>(existingUser);
+        }
+
+        public async Task<bool> IsThereVerificationCode(string verificationCode)
+        {
+            var user = await _repositoryManager.UserRepository.GetUserByVerificationCode(verificationCode);
+            if (user is null)
+            {
+                return false;
+            }
+            return true;
         }
 
         public async Task<GetUserWithIdDto> LoginUserAsync(LoginUserDto loginUser)
@@ -76,6 +96,20 @@ namespace App.Service.Services.Implementations
                 return false;
             }
             existingUser.Password = passwordDto.NewPassword;
+            _repositoryManager.UserRepository.Update(existingUser);
+            await _repositoryManager.UserRepository.SaveAsync();
+            return true;
+        }
+
+        public async Task<bool> RenewPasswordWithVerificationCodeAsync(RenewPasswordWithVerificationCodeDto passwordDto)
+        {
+            var existingUser = await _repositoryManager.UserRepository.GetUserByVerificationCode(passwordDto.VerificationCode);
+            if (existingUser is null)
+            {
+                return false;
+            }
+            existingUser.Password = passwordDto.NewPassword;
+            existingUser.ResetPasswordToken = null;
             _repositoryManager.UserRepository.Update(existingUser);
             await _repositoryManager.UserRepository.SaveAsync();
             return true;

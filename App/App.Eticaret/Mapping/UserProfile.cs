@@ -13,6 +13,7 @@ namespace App.Eticaret.Mapping
             CreateMap<LoginViewModel, LoginUserDto>();
             CreateMap<GetUserWithoutIdDto, ProfileDetailsViewModel>();
             CreateMap<ProfileDetailsViewModel, UpdateUserDto>();
+            CreateMap<RenewPasswordWithVerificationCodeViewModel, RenewPasswordWithVerificationCodeDto>();
         }
     }
 }

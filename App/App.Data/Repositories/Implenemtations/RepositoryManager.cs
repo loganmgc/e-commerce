@@ -13,8 +13,10 @@ namespace App.Data.Repositories.Implenemtations
         private readonly IDiscountRepository _discountRepository;
         private readonly IUserRepository _userRepository;
         private readonly ICartItemRepository _cartItemRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderItemRepository _orderItemRepository;
 
-        public RepositoryManager(AppDbContext dbContext, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductCommentRepository productCommentRepository, IBlogRepository blogRepository, IContactFormRepository contactFormRepository, IDiscountRepository discountRepository, IUserRepository userRepository, ICartItemRepository cartItemRepository)
+        public RepositoryManager(AppDbContext dbContext, IProductRepository productRepository, ICategoryRepository categoryRepository, IProductCommentRepository productCommentRepository, IBlogRepository blogRepository, IContactFormRepository contactFormRepository, IDiscountRepository discountRepository, IUserRepository userRepository, ICartItemRepository cartItemRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository)
         {
             _dbContext = dbContext;
             _productRepository = productRepository;
@@ -25,6 +27,8 @@ namespace App.Data.Repositories.Implenemtations
             _discountRepository = discountRepository;
             _userRepository = userRepository;
             _cartItemRepository = cartItemRepository;
+            _orderRepository = orderRepository;
+            _orderItemRepository = orderItemRepository;
         }
         public IProductRepository ProductRepository => _productRepository;
 
@@ -41,5 +45,9 @@ namespace App.Data.Repositories.Implenemtations
         public IUserRepository UserRepository => _userRepository;
 
         public ICartItemRepository CartItemRepository => _cartItemRepository;
+
+        public IOrderRepository OrderRepository => _orderRepository;
+
+        public IOrderItemRepository OrderItemRepository => _orderItemRepository;
     }
 }

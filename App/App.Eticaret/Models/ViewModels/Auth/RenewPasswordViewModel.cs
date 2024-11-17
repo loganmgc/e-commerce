@@ -2,10 +2,12 @@
 
 namespace App.Eticaret.Models.ViewModels.Auth
 {
+
     public class RenewPasswordViewModel
     {
         [Required, DataType(DataType.Password)]
         public string OldPassword { get; set; } = null!;
+
         [Required, DataType(DataType.Password)]
         public string NewPassword { get; set; } = null!;
         [Required,

@@ -39,6 +39,16 @@ namespace App.Service.Services.Implementations
             return true;
         }
 
+        public async Task<GetCartItemDto> GetCartItemByIdAsync(int cartItemId)
+        {
+            var cartItem = await _repositoryManager.CartItemRepository.GetByIdAsync(cartItemId);
+            if (cartItem is null)
+            {
+                return null;
+            }
+            return _mapper.Map<GetCartItemDto>(cartItem);
+        }
+
         public async Task<IEnumerable<GetCartItemDto>> GetCartItemsByUserIdAsync(int userId)
         {
             var cartItems = await _repositoryManager.CartItemRepository.GetCartItemsByUserIdAsync(userId);
@@ -47,6 +57,19 @@ namespace App.Service.Services.Implementations
                 return null;
             }
             return _mapper.Map<IEnumerable<GetCartItemDto>>(cartItems);
+        }
+
+        public async Task<GetCartItemDto> UpdateCartItemAsync(UpdateCartItemDto cartItemDto)
+        {
+            var existingCartItem = await _repositoryManager.CartItemRepository.GetCartItemByIdAsync(cartItemDto.CartItemId);
+            if (existingCartItem is null)
+            {
+                return null;
+            }
+            _mapper.Map(cartItemDto, existingCartItem);
+            _repositoryManager.CartItemRepository.Update(existingCartItem);
+            await _repositoryManager.CartItemRepository.SaveAsync();
+            return _mapper.Map<GetCartItemDto>(existingCartItem);
         }
     }
 }

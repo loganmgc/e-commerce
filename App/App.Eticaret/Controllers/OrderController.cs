@@ -1,5 +1,8 @@
-﻿using App.Service.Services.Interfaces;
+﻿using App.Eticaret.Models.ViewModels.Order;
+using App.Service.Models.OrderDTOs;
+using App.Service.Services.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Eticaret.Controllers
@@ -10,20 +13,28 @@ namespace App.Eticaret.Controllers
         {
         }
 
+        [Authorize(Roles = "buyer, seller")]
         [Route("/order")]
         [HttpPost]
-        public IActionResult Create()
+        public async Task<IActionResult> Create([FromForm] CheckoutViewModel model)
         {
-            // create order...
-            var orderId = 1;
-            return RedirectToAction(nameof(Details), new { orderId });
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Edit", "Cart");
+            }
+            model.UserId = GetUserId().Value;
+            string orderCode = await _serviceManager.OrderService.CreateOrder(_mapper.Map<AddOrderDto>(model));
+            return RedirectToAction(nameof(Details), new { OrderCode = orderCode });
         }
 
-        [Route("/order/{orderId:int}/details")]
+        [Authorize(Roles = "buyer, seller")]
+        [Route("/order/{orderCode}/details")]
         [HttpGet]
-        public IActionResult Details([FromRoute] int orderId)
+        public async Task<IActionResult> Details([FromRoute] string orderCode)
         {
-            return View();
+            var orderDto = await _serviceManager.OrderService.GetOrderDetailsAsync(orderCode);
+            var orderViewModel = _mapper.Map<OrderDetailsViewModel>(orderDto);
+            return View(orderViewModel);
         }
     }
 }
