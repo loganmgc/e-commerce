@@ -14,8 +14,9 @@ namespace App.Service.Services.Implementations
         private readonly ICartItemService _cartItemService;
         private readonly IEmailService _emailService;
         private readonly IOrderService _orderService;
+        private readonly IFileService _fileService;
 
-        public ServiceManager(IProductService productService, ICategoryService categoryService, IProductCommentService productCommentService, IBlogService blogService, IContactFormService contactFormService, IDiscountService discountService, IUserService userService, ICartItemService cartItemService, IEmailService emailService, IOrderService orderService)
+        public ServiceManager(IProductService productService, ICategoryService categoryService, IProductCommentService productCommentService, IBlogService blogService, IContactFormService contactFormService, IDiscountService discountService, IUserService userService, ICartItemService cartItemService, IEmailService emailService, IOrderService orderService, IFileService fileService)
         {
             _productService = productService;
             _categoryService = categoryService;
@@ -27,6 +28,7 @@ namespace App.Service.Services.Implementations
             _cartItemService = cartItemService;
             _emailService = emailService;
             _orderService = orderService;
+            _fileService = fileService;
         }
 
         public IProductService ProductService => _productService;
@@ -48,5 +50,7 @@ namespace App.Service.Services.Implementations
         public IEmailService EmailService => _emailService;
 
         public IOrderService OrderService => _orderService;
+
+        public IFileService FileService => _fileService;
     }
 }

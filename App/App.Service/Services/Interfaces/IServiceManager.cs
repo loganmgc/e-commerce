@@ -12,5 +12,6 @@
         ICartItemService CartItemService { get; }
         IEmailService EmailService { get; }
         IOrderService OrderService { get; }
+        IFileService FileService { get; }
     }
 }

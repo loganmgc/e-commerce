@@ -40,6 +40,7 @@ namespace App.Shared
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }
